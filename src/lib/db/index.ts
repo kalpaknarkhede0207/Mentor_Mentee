@@ -16,6 +16,7 @@ import {
   ParentMeetingSchedule,
   ActivityPointRecord,
   PeerTutor,
+  BuddyConnectionRecord,
   AcademicResource,
   ExamCountdown
 } from '@/types/mentorship';
@@ -34,6 +35,7 @@ import {
   SEED_MEETING_HISTORIES,
   SEED_PARENT_MEETINGS,
   SEED_ACTIVITY_POINTS,
+  SEED_BUDDY_CONNECTIONS,
   SEED_PEER_TUTORS,
   SEED_ACADEMIC_RESOURCES,
   SEED_EXAM_COUNTDOWNS
@@ -55,6 +57,7 @@ class MentorshipDatabase {
   private meetingHistories: MeetingHistoryEntry[] = [...SEED_MEETING_HISTORIES];
   private parentMeetings: Record<string, ParentMeetingSchedule> = { ...SEED_PARENT_MEETINGS };
   private activityPoints: Record<string, ActivityPointRecord[]> = { ...SEED_ACTIVITY_POINTS };
+  private buddyConnections: Record<string, BuddyConnectionRecord[]> = { ...SEED_BUDDY_CONNECTIONS };
   private peerTutors: PeerTutor[] = [...SEED_PEER_TUTORS];
   private academicResources: AcademicResource[] = [...SEED_ACADEMIC_RESOURCES];
   private examCountdowns: ExamCountdown[] = [...SEED_EXAM_COUNTDOWNS];
@@ -540,6 +543,47 @@ class MentorshipDatabase {
 
   // --- Student Activity Points ---
   public getActivityPoints(studentId: string): ActivityPointRecord[] {
+    if (!this.activityPoints[studentId] || this.activityPoints[studentId].length === 0) {
+      const mentee = this.mentees.find(m => m.studentId === studentId);
+      if (mentee) {
+        this.activityPoints[studentId] = [
+          {
+            id: `act-${studentId}-1`,
+            studentId,
+            title: 'Campus Environmental Sustainability & Cleanliness Initiative',
+            category: 'COMMUNITY_OUTREACH',
+            pointsAwarded: 15,
+            status: 'VERIFIED_AND_CREDITED',
+            date: '2026-08-20',
+            issuingAuthority: 'Institutional Social Responsibility Cell',
+            verifiedBy: 'Dr. Ananya Sen',
+            verificationDate: '2026-08-24'
+          },
+          {
+            id: `act-${studentId}-2`,
+            studentId,
+            title: 'Inter-Department Science & Engineering Innovation Exhibition',
+            category: 'TECHNICAL_HACKATHON',
+            pointsAwarded: 20,
+            status: 'VERIFIED_AND_CREDITED',
+            date: '2026-09-10',
+            issuingAuthority: 'Technical Student Council',
+            verifiedBy: 'Dr. Ananya Sen',
+            verificationDate: '2026-09-15'
+          },
+          {
+            id: `act-${studentId}-3`,
+            studentId,
+            title: 'Skill Development Certificate: Technical Communication & Drafting',
+            category: 'CERTIFICATIONS_MOOC',
+            pointsAwarded: 15,
+            status: 'PENDING_APPROVAL',
+            date: '2026-10-02',
+            issuingAuthority: 'National Technical Skill Registry'
+          }
+        ];
+      }
+    }
     return this.activityPoints[studentId] || [];
   }
 
@@ -550,10 +594,65 @@ class MentorshipDatabase {
     const newRecord: ActivityPointRecord = {
       ...item,
       id: `act-${Date.now()}`,
-      status: 'VERIFIED_AND_CREDITED'
+      status: 'PENDING_APPROVAL'
     };
     this.activityPoints[studentId].unshift(newRecord);
     return newRecord;
+  }
+
+  public verifyActivityPoint(studentId: string, pointId: string, verifiedBy: string = 'Dr. Ananya Sen'): ActivityPointRecord | undefined {
+    const list = this.getActivityPoints(studentId);
+    const target = list.find(p => p.id === pointId);
+    if (!target) return undefined;
+    target.status = 'VERIFIED_AND_CREDITED';
+    target.verifiedBy = verifiedBy;
+    target.verificationDate = new Date().toISOString().split('T')[0];
+    return target;
+  }
+
+  // --- Study Buddies & Peer Tutor Connections ---
+  public getBuddyConnections(studentId?: string): BuddyConnectionRecord[] {
+    if (studentId) {
+      if (!this.buddyConnections[studentId] || this.buddyConnections[studentId].length === 0) {
+        const mentee = this.mentees.find(m => m.studentId === studentId);
+        if (mentee) {
+          const weak = mentee.academicMetrics.weakSubjects[0] || 'Mathematics';
+          const tutor = this.peerTutors.find(t => t.subject.toLowerCase().includes(weak.toLowerCase())) || this.peerTutors[0];
+          this.buddyConnections[studentId] = [
+            {
+              id: `buddy-${studentId}-1`,
+              studentId,
+              studentName: mentee.name,
+              rollNo: mentee.rollNo,
+              tutorId: tutor.id,
+              tutorName: tutor.name,
+              tutorRollNo: tutor.rollNo,
+              subject: tutor.subject,
+              venue: tutor.venue,
+              scheduledTime: tutor.availableTime,
+              status: 'ACTIVE_STUDY_PARTNER',
+              connectedAt: '2026-09-18',
+              contactNote: `Remedial peer coaching initiated for ${weak}.`
+            }
+          ];
+        }
+      }
+      return this.buddyConnections[studentId] || [];
+    }
+    return Object.values(this.buddyConnections).flat();
+  }
+
+  public connectWithPeerTutor(connection: Omit<BuddyConnectionRecord, 'id' | 'connectedAt'>): BuddyConnectionRecord {
+    if (!this.buddyConnections[connection.studentId]) {
+      this.buddyConnections[connection.studentId] = [];
+    }
+    const newConn: BuddyConnectionRecord = {
+      ...connection,
+      id: `buddy-${Date.now()}`,
+      connectedAt: new Date().toISOString().split('T')[0]
+    };
+    this.buddyConnections[connection.studentId].unshift(newConn);
+    return newConn;
   }
 
   // --- Peer Tutors ---

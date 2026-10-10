@@ -32,3 +32,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const { studentId, pointId, verifiedBy } = body;
+
+    if (!studentId || !pointId) {
+      return NextResponse.json({ success: false, error: 'Missing studentId or pointId' }, { status: 400 });
+    }
+
+    const updated = db.verifyActivityPoint(studentId, pointId, verifiedBy || 'Dr. Ananya Sen (GFM)');
+    if (!updated) {
+      return NextResponse.json({ success: false, error: 'Activity point record not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, data: updated });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}

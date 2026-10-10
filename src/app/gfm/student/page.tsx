@@ -47,6 +47,7 @@ import {
   ParentMeetingSchedule,
   ActivityPointRecord,
   PeerTutor,
+  BuddyConnectionRecord,
   AcademicResource,
   ExamCountdown
 } from '@/types/mentorship';
@@ -102,6 +103,7 @@ export default function StudentGfmPage() {
   const [examCountdowns, setExamCountdowns] = useState<ExamCountdown[]>([]);
   const [resourceFilter, setResourceFilter] = useState<string>('ALL');
   const [tutorConnectNotice, setTutorConnectNotice] = useState<string | null>(null);
+  const [connectedBuddies, setConnectedBuddies] = useState<BuddyConnectionRecord[]>([]);
 
   // Grievance form state
   const [grievanceCategory, setGrievanceCategory] = useState<'ACADEMIC' | 'HOSTEL_CAMPUS' | 'EXAMS_EVALUATION' | 'PERSONAL_COUNSELING'>('ACADEMIC');
@@ -213,6 +215,15 @@ export default function StudentGfmPage() {
           setExamCountdowns(acadJson.data.countdowns || []);
         }
       }
+
+      // 9. Fetch Student Study Buddy Connections
+      const budRes = await fetch(`/api/gfm/buddy-connect?studentId=${studentId}`);
+      if (budRes.ok) {
+        const budJson = await budRes.json();
+        if (budJson.success) {
+          setConnectedBuddies(budJson.data || []);
+        }
+      }
     } catch (err) {
       console.error('Error fetching student portal data:', err);
     } finally {
@@ -318,9 +329,37 @@ export default function StudentGfmPage() {
   };
 
   // Feature 7: Peer Tutor Connect Handler
-  const handleConnectTutor = (tutor: PeerTutor) => {
-    setTutorConnectNotice(`Connection request dispatched to peer tutor ${tutor.name}. Meeting room allocated at ${tutor.venue} (${tutor.availableTime}).`);
-    setTimeout(() => setTutorConnectNotice(null), 4000);
+  const handleConnectTutor = async (tutor: PeerTutor) => {
+    if (!studentUser) return;
+    try {
+      const res = await fetch('/api/gfm/buddy-connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: studentUser.studentId,
+          studentName: studentUser.name,
+          rollNo: studentUser.rollNo,
+          tutorId: tutor.id,
+          tutorName: tutor.name,
+          tutorRollNo: tutor.rollNo,
+          subject: tutor.subject,
+          venue: tutor.venue,
+          scheduledTime: tutor.availableTime,
+          contactNote: `Study partner session confirmed with ${studentUser.name}.`
+        })
+      });
+
+      const json = await res.json();
+      if (json.success) {
+        setConnectedBuddies(prev => [json.data, ...prev.filter(b => b.tutorId !== tutor.id)]);
+        setTutorConnectNotice(`Connected with peer tutor ${tutor.name}! Venue: ${tutor.venue} (${tutor.availableTime}). Recorded in your GFM mentor ledger.`);
+      } else {
+        setTutorConnectNotice(`Connection request dispatched to peer tutor ${tutor.name}.`);
+      }
+    } catch (err) {
+      setTutorConnectNotice(`Connection request dispatched to peer tutor ${tutor.name}. Meeting room allocated at ${tutor.venue} (${tutor.availableTime}).`);
+    }
+    setTimeout(() => setTutorConnectNotice(null), 5000);
   };
 
   // Calculations for Attendance Runway
@@ -1279,12 +1318,19 @@ export default function StudentGfmPage() {
                       <strong className="text-slate-900 block text-xs">{tutor.name}</strong>
                       <span className="text-[10px] text-slate-400">Roll: {tutor.rollNo} &bull; {tutor.venue}</span>
                     </div>
-                    <button
-                      onClick={() => handleConnectTutor(tutor)}
-                      className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer"
-                    >
-                      Connect
-                    </button>
+                    {connectedBuddies.some(b => b.tutorId === tutor.id) ? (
+                      <span className="px-2 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-[10px] flex items-center gap-1 shadow-2xs border border-emerald-300">
+                        <Check className="w-3 h-3 text-emerald-600" />
+                        <span>Connected</span>
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handleConnectTutor(tutor)}
+                        className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer"
+                      >
+                        Connect
+                      </button>
+                    )}
                   </div>
                   <div className="flex flex-wrap gap-1">
                     <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-semibold">

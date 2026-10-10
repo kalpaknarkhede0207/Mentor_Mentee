@@ -223,6 +223,8 @@ export interface ActivityPointRecord {
   status: 'VERIFIED_AND_CREDITED' | 'PENDING_APPROVAL';
   date: string;
   issuingAuthority: string;
+  verifiedBy?: string;
+  verificationDate?: string;
 }
 
 export interface PeerTutor {
@@ -233,6 +235,22 @@ export interface PeerTutor {
   availableTime: string;
   venue: string;
   contactNote: string;
+}
+
+export interface BuddyConnectionRecord {
+  id: string;
+  studentId: string;
+  studentName: string;
+  rollNo: string;
+  tutorId: string;
+  tutorName: string;
+  tutorRollNo: string;
+  subject: string;
+  venue: string;
+  scheduledTime: string;
+  status: 'ACTIVE_STUDY_PARTNER' | 'SESSION_SCHEDULED' | 'COMPLETED';
+  connectedAt: string;
+  contactNote?: string;
 }
 
 export interface AcademicResource {

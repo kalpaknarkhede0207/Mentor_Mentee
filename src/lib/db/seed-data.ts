@@ -14,6 +14,7 @@ import {
   ParentMeetingSchedule,
   ActivityPointRecord,
   PeerTutor,
+  BuddyConnectionRecord,
   AcademicResource,
   ExamCountdown
 } from '@/types/mentorship';
@@ -1417,34 +1418,289 @@ export const SEED_PARENT_MEETINGS: Record<string, ParentMeetingSchedule> = {
 export const SEED_ACTIVITY_POINTS: Record<string, ActivityPointRecord[]> = {
   'stu-1001': [
     {
-      id: 'act-1',
+      id: 'act-1001-1',
       studentId: 'stu-1001',
       title: 'Annual Campus Tree Plantation & Cleanliness Drive',
       category: 'COMMUNITY_OUTREACH',
       pointsAwarded: 15,
       status: 'VERIFIED_AND_CREDITED',
       date: '2026-08-15',
-      issuingAuthority: 'Institutional Social Responsibility Cell'
+      issuingAuthority: 'Institutional Social Responsibility Cell',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-08-20'
     },
     {
-      id: 'act-2',
+      id: 'act-1001-2',
       studentId: 'stu-1001',
       title: 'Inter-College Science & Robotics Exhibition Participant',
       category: 'TECHNICAL_HACKATHON',
       pointsAwarded: 15,
       status: 'VERIFIED_AND_CREDITED',
       date: '2026-09-05',
-      issuingAuthority: 'Technical Innovation Council'
+      issuingAuthority: 'Technical Innovation Council',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-09-10'
     },
     {
-      id: 'act-3',
+      id: 'act-1001-3',
       studentId: 'stu-1001',
       title: 'State Level Badminton Tournament (Quarter Finalist)',
       category: 'SPORTS_CULTURAL',
       pointsAwarded: 15,
       status: 'VERIFIED_AND_CREDITED',
       date: '2026-09-18',
-      issuingAuthority: 'Department of Physical Education'
+      issuingAuthority: 'Department of Physical Education',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-09-22'
+    },
+    {
+      id: 'act-1001-4',
+      studentId: 'stu-1001',
+      title: 'Full-Stack Web Development Bootcamp Certificate (30h)',
+      category: 'CERTIFICATIONS_MOOC',
+      pointsAwarded: 15,
+      status: 'PENDING_APPROVAL',
+      date: '2026-10-04',
+      issuingAuthority: 'National Skill Development & Coursera'
+    }
+  ],
+  'stu-1002': [
+    {
+      id: 'act-1002-1',
+      studentId: 'stu-1002',
+      title: 'Regional Smart India Hackathon Runners-Up',
+      category: 'TECHNICAL_HACKATHON',
+      pointsAwarded: 25,
+      status: 'VERIFIED_AND_CREDITED',
+      date: '2026-08-22',
+      issuingAuthority: 'Department of Science & Innovation',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-08-25'
+    },
+    {
+      id: 'act-1002-2',
+      studentId: 'stu-1002',
+      title: 'Youth Red Cross Blood Donation Camp Coordinator',
+      category: 'COMMUNITY_OUTREACH',
+      pointsAwarded: 15,
+      status: 'VERIFIED_AND_CREDITED',
+      date: '2026-09-02',
+      issuingAuthority: 'Institutional Red Cross Youth Wing',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-09-05'
+    },
+    {
+      id: 'act-1002-3',
+      studentId: 'stu-1002',
+      title: 'Python for Data Analysis & Visualization Professional Cert',
+      category: 'CERTIFICATIONS_MOOC',
+      pointsAwarded: 20,
+      status: 'VERIFIED_AND_CREDITED',
+      date: '2026-09-28',
+      issuingAuthority: 'NPTEL SWAYAM Online Portal',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-10-01'
+    }
+  ],
+  'stu-1003': [
+    {
+      id: 'act-1003-1',
+      studentId: 'stu-1003',
+      title: 'Inter-School Parliamentary Debate Gold Medal',
+      category: 'SPORTS_CULTURAL',
+      pointsAwarded: 20,
+      status: 'VERIFIED_AND_CREDITED',
+      date: '2026-08-10',
+      issuingAuthority: 'Literary & Debating Society',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-08-14'
+    },
+    {
+      id: 'act-1003-2',
+      studentId: 'stu-1003',
+      title: 'Campus Solar Energy Audit & Sustainability Drive',
+      category: 'COMMUNITY_OUTREACH',
+      pointsAwarded: 15,
+      status: 'VERIFIED_AND_CREDITED',
+      date: '2026-09-12',
+      issuingAuthority: 'Green Campus Cell',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-09-16'
+    },
+    {
+      id: 'act-1003-3',
+      studentId: 'stu-1003',
+      title: 'Cloud Computing Fundamentals Practitioner Exam',
+      category: 'CERTIFICATIONS_MOOC',
+      pointsAwarded: 20,
+      status: 'PENDING_APPROVAL',
+      date: '2026-10-06',
+      issuingAuthority: 'AWS Educate / Cloud Foundation'
+    }
+  ],
+  'stu-1004': [
+    {
+      id: 'act-1004-1',
+      studentId: 'stu-1004',
+      title: 'State Mathematics Olympiad Top-50 Distinction',
+      category: 'TECHNICAL_HACKATHON',
+      pointsAwarded: 25,
+      status: 'VERIFIED_AND_CREDITED',
+      date: '2026-08-30',
+      issuingAuthority: 'National Mathematics Council',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-09-02'
+    },
+    {
+      id: 'act-1004-2',
+      studentId: 'stu-1004',
+      title: 'Annual Cultural Fest Classical Dance Ensemble Lead',
+      category: 'SPORTS_CULTURAL',
+      pointsAwarded: 15,
+      status: 'VERIFIED_AND_CREDITED',
+      date: '2026-09-14',
+      issuingAuthority: 'Cultural Committee',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-09-18'
+    },
+    {
+      id: 'act-1004-3',
+      studentId: 'stu-1004',
+      title: 'Cyber Security Essentials & Safe Surfing Workshop',
+      category: 'CERTIFICATIONS_MOOC',
+      pointsAwarded: 10,
+      status: 'VERIFIED_AND_CREDITED',
+      date: '2026-10-01',
+      issuingAuthority: 'Ministry of Electronics & IT',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-10-03'
+    }
+  ],
+  'stu-1005': [
+    {
+      id: 'act-1005-1',
+      studentId: 'stu-1005',
+      title: 'Rural Digital Literacy & Tech Support Camp',
+      category: 'COMMUNITY_OUTREACH',
+      pointsAwarded: 15,
+      status: 'VERIFIED_AND_CREDITED',
+      date: '2026-09-04',
+      issuingAuthority: 'Institutional Social Welfare Committee',
+      verifiedBy: 'Dr. Ananya Sen',
+      verificationDate: '2026-09-08'
+    },
+    {
+      id: 'act-1005-2',
+      studentId: 'stu-1005',
+      title: 'Applied Chemistry Virtual Lab Experiments Masterclass',
+      category: 'CERTIFICATIONS_MOOC',
+      pointsAwarded: 15,
+      status: 'PENDING_APPROVAL',
+      date: '2026-10-05',
+      issuingAuthority: 'Virtual Labs Consortium'
+    }
+  ]
+};
+
+export const SEED_BUDDY_CONNECTIONS: Record<string, BuddyConnectionRecord[]> = {
+  'stu-1001': [
+    {
+      id: 'buddy-1001-1',
+      studentId: 'stu-1001',
+      studentName: 'Karan Vashisht',
+      rollNo: '10A-01',
+      tutorId: 'tutor-1',
+      tutorName: 'Aarav Mehta',
+      tutorRollNo: '11A-01',
+      subject: 'Applied Mathematics & Trigonometry',
+      venue: 'Classroom LH-2 (Row 1-2)',
+      scheduledTime: 'Zero Period (08:15 AM - 08:50 AM)',
+      status: 'ACTIVE_STUDY_PARTNER',
+      connectedAt: '2026-09-12',
+      contactNote: 'Bi-weekly formula proof review and NCERT Exemplar doubt solving.'
+    },
+    {
+      id: 'buddy-1001-2',
+      studentId: 'stu-1001',
+      studentName: 'Karan Vashisht',
+      rollNo: '10A-01',
+      tutorId: 'tutor-3',
+      tutorName: 'Aditya Kulkarni',
+      tutorRollNo: '11A-06',
+      subject: 'Physics Derivations & Mechanics',
+      venue: 'Audio-Visual Hall',
+      scheduledTime: 'Post-Lecture (04:00 PM - 04:30 PM)',
+      status: 'SESSION_SCHEDULED',
+      connectedAt: '2026-10-02',
+      contactNote: 'Preparing free body diagrams and kinematics numericals.'
+    }
+  ],
+  'stu-1002': [
+    {
+      id: 'buddy-1002-1',
+      studentId: 'stu-1002',
+      studentName: 'Tanya Bhardwaj',
+      rollNo: '10A-02',
+      tutorId: 'tutor-2',
+      tutorName: 'Tanvi Saxena',
+      tutorRollNo: '11A-05',
+      subject: 'Applied Chemistry & Lab Calculations',
+      venue: 'Chemistry Senior Lab',
+      scheduledTime: 'Lunch Recess (01:00 PM - 01:30 PM)',
+      status: 'ACTIVE_STUDY_PARTNER',
+      connectedAt: '2026-09-20',
+      contactNote: 'Organic synthesis mechanisms and titration calculations.'
+    }
+  ],
+  'stu-1003': [
+    {
+      id: 'buddy-1003-1',
+      studentId: 'stu-1003',
+      studentName: 'Kabir Joshi',
+      rollNo: '10A-03',
+      tutorId: 'tutor-1',
+      tutorName: 'Aarav Mehta',
+      tutorRollNo: '11A-01',
+      subject: 'Applied Mathematics & Trigonometry',
+      venue: 'Classroom LH-2 (Row 1-2)',
+      scheduledTime: 'Zero Period (08:15 AM - 08:50 AM)',
+      status: 'ACTIVE_STUDY_PARTNER',
+      connectedAt: '2026-09-25',
+      contactNote: 'Remedial coaching for Unit Test 2 quadratic equations.'
+    }
+  ],
+  'stu-1004': [
+    {
+      id: 'buddy-1004-1',
+      studentId: 'stu-1004',
+      studentName: 'Sneha Patel',
+      rollNo: '10A-04',
+      tutorId: 'tutor-3',
+      tutorName: 'Aditya Kulkarni',
+      tutorRollNo: '11A-06',
+      subject: 'Physics Derivations & Mechanics',
+      venue: 'Audio-Visual Hall',
+      scheduledTime: 'Post-Lecture (04:00 PM - 04:30 PM)',
+      status: 'ACTIVE_STUDY_PARTNER',
+      connectedAt: '2026-09-28',
+      contactNote: 'Optics and wave motion review.'
+    }
+  ],
+  'stu-1005': [
+    {
+      id: 'buddy-1005-1',
+      studentId: 'stu-1005',
+      studentName: 'Ayush Verma',
+      rollNo: '10A-05',
+      tutorId: 'tutor-2',
+      tutorName: 'Tanvi Saxena',
+      tutorRollNo: '11A-05',
+      subject: 'Applied Chemistry & Lab Calculations',
+      venue: 'Chemistry Senior Lab',
+      scheduledTime: 'Lunch Recess (01:00 PM - 01:30 PM)',
+      status: 'SESSION_SCHEDULED',
+      connectedAt: '2026-10-05',
+      contactNote: 'Stoichiometry problem sets.'
     }
   ]
 };
