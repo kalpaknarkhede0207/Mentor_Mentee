@@ -219,7 +219,7 @@ export default function MentorCoordinatorPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
-              <span className="text-[11px] bg-slate-800 text-emerald-400 border border-slate-700 px-2.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider">
+              <span className="text-[11px] bg-slate-800 text-amber-400 border border-slate-700 px-2.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider">
                 Admin Command Center
               </span>
               <span className="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded font-semibold">

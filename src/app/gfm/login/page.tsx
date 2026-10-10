@@ -78,14 +78,14 @@ export default function GfmLoginPage() {
         {/* Solid Header Branding */}
         <div className="bg-slate-900 text-white p-6 sm:p-8 text-center border-b border-slate-800">
           <div className="w-12 h-12 mx-auto rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shadow-sm mb-3">
-            <BookMarked className="w-6 h-6 text-white" />
+            <BookMarked className="w-6 h-6 text-amber-400" />
           </div>
 
           <h1 className="text-xl font-extrabold tracking-tight">
             Guardian Faculty Member (GFM) Portal
           </h1>
           <p className="text-xs text-slate-400 mt-1 flex items-center justify-center gap-1.5">
-            <School className="w-3.5 h-3.5 text-slate-400" />
+            <School className="w-3.5 h-3.5 text-amber-400" />
             <span>Academic Mentorship &amp; Grievance Cell</span>
           </p>
 
@@ -171,7 +171,7 @@ export default function GfmLoginPage() {
                 className="w-full py-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 <span>{loading ? 'Authenticating...' : 'Sign In to Student Portal'}</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 text-amber-400" />
               </button>
 
               {/* Demo Helper Accounts */}
@@ -264,8 +264,8 @@ export default function GfmLoginPage() {
 
               <div className="p-5 rounded-xl bg-slate-900 text-white space-y-3.5 border border-slate-800">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold border border-slate-700">
-                    <Building2 className="w-4 h-4" />
+                  <div className="w-8 h-8 rounded-lg bg-slate-800 text-amber-400 flex items-center justify-center font-bold border border-slate-700">
+                    <Building2 className="w-4 h-4 text-amber-400" />
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-white">Institutional Coordinator Portal</h4>

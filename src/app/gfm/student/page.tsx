@@ -384,7 +384,7 @@ export default function StudentGfmPage() {
           
           {/* Identity */}
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-white font-black text-xl shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-amber-400 font-black text-xl shrink-0">
               {studentUser?.name.charAt(0) || 'S'}
             </div>
             <div>
