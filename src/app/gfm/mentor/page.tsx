@@ -42,7 +42,9 @@ import {
   FileText,
   MapPin,
   BookOpen,
-  ShieldCheck
+  ShieldCheck,
+  Menu,
+  TrendingUp
 } from 'lucide-react';
 import { 
   MenteeProfile, 
@@ -77,10 +79,13 @@ export default function GfmMentorPage() {
   const [oneOnOnes, setOneOnOnes] = useState<GfmOneOnOneSession[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filters
+  // Encapsulated Navigation Modules & Drawer
+  type MentorModule = 'OVERVIEW' | 'NOTICES' | 'BATCH_MEET' | 'ATTENDANCE' | 'PARENT_MEET' | 'ACTIVITIES' | 'BUDDIES' | 'ROSTER' | 'GRIEVANCES';
+  const [activeModule, setActiveModule] = useState<MentorModule>('OVERVIEW');
+  const [showDrawerMenu, setShowDrawerMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>('ROSTER');
   const [riskFilter, setRiskFilter] = useState<'ALL' | 'HIGH_RISK' | 'HEALTHY'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'ROSTER' | 'ANNOUNCEMENTS' | 'MEETING' | 'GRIEVANCES' | 'AUTHORITY'>('ROSTER');
 
   // Batch Announcement & Broadcast State
   const [announcements, setAnnouncements] = useState<GfmAnnouncement[]>([]);
@@ -341,7 +346,8 @@ export default function GfmMentorPage() {
   // GFM Schedules Parent-Mentor Meeting (Pushes Notification to Student)
   const handleSchedulePmm = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedStudentDetail) return;
+    const targetStudent = selectedStudentDetail || mentees[0];
+    if (!targetStudent) return;
     setSchedulingPmm(true);
     setPmmNotice(null);
     try {
@@ -349,7 +355,7 @@ export default function GfmMentorPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          studentId: selectedStudentDetail.studentId,
+          studentId: targetStudent.studentId,
           scheduledDate: pmmDate,
           timeSlot: pmmTime,
           venue: pmmVenue,
@@ -360,7 +366,7 @@ export default function GfmMentorPage() {
       const json = await res.json();
       if (json.success) {
         setStudentParentMeeting(json.data);
-        setPmmNotice(`✓ Meeting scheduled on ${pmmDate} (${pmmTime})! Notification pushed to ${selectedStudentDetail.name}.`);
+        setPmmNotice(`✓ Meeting scheduled on ${pmmDate} (${pmmTime})! Notification pushed to ${targetStudent.name}.`);
         setTimeout(() => setPmmNotice(null), 5000);
       }
     } catch (err) {
@@ -932,199 +938,275 @@ export default function GfmMentorPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       
-      {/* Top Banner & Quick Controls */}
-      <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-emerald-950/20 relative overflow-hidden">
-        <div className="absolute right-0 top-0 -mt-10 -mr-10 w-60 h-60 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+      {/* SOLID PROFESSIONAL HEADER */}
+      <header className="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-sm relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="text-xs bg-emerald-400/20 text-emerald-200 border border-emerald-300/30 px-3 py-0.5 rounded-full font-bold uppercase tracking-wider">
+            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+              <span className="text-[11px] bg-slate-800 text-emerald-400 border border-slate-700 px-2.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider">
                 GFM Mentor Cockpit
               </span>
-              <span className="text-xs bg-white/10 text-white/90 border border-white/20 px-3 py-0.5 rounded-full font-bold inline-flex items-center gap-1.5 shadow-2xs">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Div-B &bull; Batch-2</span>
-                <span className="text-white/70 font-normal hidden sm:inline">(Assigned Cohort)</span>
+              <span className="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded font-semibold">
+                Div-B &bull; Batch-2
               </span>
-              <span className="text-xs bg-white/10 text-white/90 px-3 py-0.5 rounded-full font-medium hidden md:inline-flex">
-                Institutional Mentorship Framework
+              <span className="text-[11px] bg-slate-800 text-slate-400 px-2.5 py-0.5 rounded font-normal hidden sm:inline">
+                Assigned Cohort
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
               {activeMentor.name}
             </h1>
-            <p className="text-xs sm:text-sm text-emerald-100/90 mt-1">
+            <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
               Guardian Faculty Member &bull; Mentoring Batch Roster, Grievance Resolutions &amp; Weekly Meetings
             </p>
           </div>
 
-          {/* Quick Action Buttons - 2x2 on Mobile, Flex on Desktop */}
-          <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 w-full md:w-auto">
+          {/* Quick Action Buttons & 3-Line Menu Trigger */}
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setShowAnnouncementModal(true)}
-              className="px-3 sm:px-4 py-2.5 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer text-center"
-              title="Broadcast announcement or forwarded message to all 36 mentees in Div-B • Batch-2"
+              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <Megaphone className="w-4 h-4 text-slate-950 shrink-0" />
-              <span className="truncate">Broadcast Announcement</span>
+              <Megaphone className="w-4 h-4 text-emerald-400" />
+              <span>Broadcast Notice</span>
             </button>
 
             <button
               onClick={() => setShowMeetingModal(true)}
-              className="px-3 sm:px-4 py-2.5 rounded-xl bg-white text-emerald-900 font-bold text-xs sm:text-sm shadow-md hover:bg-emerald-50 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer text-center"
+              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <Calendar className="w-4 h-4 text-emerald-700 shrink-0" />
-              <span className="truncate">Conduct Meeting</span>
-            </button>
-
-            <button
-              onClick={() => handleOpenMeetingHistory()}
-              className="px-3 sm:px-4 py-2.5 rounded-xl bg-emerald-950/40 hover:bg-emerald-950/60 text-white border border-emerald-400/30 font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer shadow-xs text-center"
-              title="View interaction summaries and past batch & 1-on-1 meeting records"
-            >
-              <History className="w-4 h-4 text-emerald-300 shrink-0" />
-              <span className="truncate">Meeting History</span>
+              <Calendar className="w-4 h-4 text-slate-300" />
+              <span>Conduct Meeting</span>
             </button>
 
             <button
               onClick={() => setShowAuthorityModal(true)}
-              className="px-3 sm:px-4 py-2.5 rounded-xl bg-emerald-700/60 hover:bg-emerald-700 text-white border border-emerald-500/30 font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer text-center"
+              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <Building2 className="w-4 h-4 shrink-0" />
-              <span className="truncate">Authority Report</span>
+              <Building2 className="w-4 h-4 text-slate-300" />
+              <span>Authority Report</span>
+            </button>
+
+            {/* 3-LINE MENU BUTTON */}
+            <button
+              onClick={() => setShowDrawerMenu(true)}
+              className="px-3.5 py-2 rounded-xl bg-white text-slate-900 hover:bg-slate-100 font-extrabold text-xs flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+              title="Open Navigation Menu"
+            >
+              <Menu className="w-4 h-4 text-slate-900" />
+              <span>Menu</span>
             </button>
           </div>
         </div>
 
-        {/* Batch KPI Counters with Interactive Navigation Links */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mt-6 pt-6 border-t border-white/10 text-xs">
-          {/* 1. Total Mentees -> Redirects to Roster list */}
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab('ROSTER');
-              setRiskFilter('ALL');
-              setTimeout(() => {
-                const el = document.getElementById('roster-section') || document.getElementById('main-tabs');
-                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 50);
-            }}
-            className="bg-white/5 hover:bg-white/10 active:scale-[0.98] rounded-xl p-3 border border-white/10 hover:border-emerald-400/40 text-left transition-all cursor-pointer group flex flex-col justify-between"
-            title="Click to view full batch mentees roster"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-emerald-200 block text-[11px] group-hover:text-emerald-100 font-medium">Total Mentees in Batch</span>
-                <ArrowRight className="w-3 h-3 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-xl sm:text-2xl font-extrabold text-white">{mentees.length}</span>
-                <span className="text-[10px] text-white/70">Students</span>
-              </div>
+        {/* 4 Essential Metrics */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-800 text-xs">
+          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
+            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Batch Strength</span>
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className="text-base font-black text-white">{mentees.length}</span>
+              <span className="text-[10px] text-slate-400">Students</span>
             </div>
-            <span className="text-[10px] text-emerald-300 font-semibold mt-2 flex items-center gap-1 group-hover:underline">
-              <span>View Student Roster</span>
-              <span className="text-xs">&rarr;</span>
-            </span>
-          </button>
+          </div>
 
-          {/* 2. High-Risk -> Redirects and filters to High Risk list */}
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab('ROSTER');
-              setRiskFilter('HIGH_RISK');
-              setTimeout(() => {
-                const el = document.getElementById('roster-section') || document.getElementById('main-tabs');
-                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 50);
-            }}
-            className="bg-white/5 hover:bg-white/10 active:scale-[0.98] rounded-xl p-3 border border-white/10 hover:border-rose-400/40 text-left transition-all cursor-pointer group flex flex-col justify-between"
-            title="Click to filter to High Risk students (low attendance / marks)"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-emerald-200 block text-[11px] group-hover:text-emerald-100 font-medium">High-Risk Classification</span>
-                <ArrowRight className="w-3 h-3 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className={`text-xl sm:text-2xl font-extrabold ${highRiskCount > 0 ? 'text-rose-300' : 'text-emerald-300'}`}>
-                  {highRiskCount}
-                </span>
-                <span className="text-[10px] text-white/70">
-                  (Att &lt; 75% / Low Marks)
-                </span>
-              </div>
+          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
+            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">High Risk</span>
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className={`text-base font-black ${highRiskCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                {highRiskCount}
+              </span>
+              <span className="text-[10px] text-slate-400">Att &lt; 75%</span>
             </div>
-            <span className="text-[10px] text-rose-300 font-semibold mt-2 flex items-center gap-1 group-hover:underline">
-              <span>Filter High Risk List</span>
-              <span className="text-xs">&rarr;</span>
-            </span>
-          </button>
+          </div>
 
-          {/* 3. Average Attendance -> Redirects to Roster */}
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab('ROSTER');
-              setRiskFilter('ALL');
-              setTimeout(() => {
-                const el = document.getElementById('roster-section') || document.getElementById('main-tabs');
-                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 50);
-            }}
-            className="bg-white/5 hover:bg-white/10 active:scale-[0.98] rounded-xl p-3 border border-white/10 hover:border-emerald-400/40 text-left transition-all cursor-pointer group flex flex-col justify-between"
-            title="Click to inspect batch attendance tracking"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-emerald-200 block text-[11px] group-hover:text-emerald-100 font-medium">Average Attendance</span>
-                <ArrowRight className="w-3 h-3 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-xl sm:text-2xl font-extrabold text-white">{avgAttendance}%</span>
-                <span className="text-[10px] text-emerald-300">Cohort Mean</span>
-              </div>
+          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
+            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Mean Attendance</span>
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className="text-base font-black text-emerald-400">{avgAttendance}%</span>
+              <span className="text-[10px] text-slate-400">Cohort Mean</span>
             </div>
-            <span className="text-[10px] text-emerald-300 font-semibold mt-2 flex items-center gap-1 group-hover:underline">
-              <span>Check Attendance</span>
-              <span className="text-xs">&rarr;</span>
-            </span>
-          </button>
+          </div>
 
-          {/* 4. Device Grievances -> Redirects to Grievances list */}
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab('GRIEVANCES');
-              setTimeout(() => {
-                const el = document.getElementById('grievances-section') || document.getElementById('main-tabs');
-                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 50);
-            }}
-            className="bg-white/5 hover:bg-white/10 active:scale-[0.98] rounded-xl p-3 border border-white/10 hover:border-amber-400/40 text-left transition-all cursor-pointer group flex flex-col justify-between"
-            title="Click to view on-device student grievances list"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-emerald-200 block text-[11px] group-hover:text-emerald-100 font-medium">Device Grievances</span>
-                <ArrowRight className="w-3 h-3 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-xl sm:text-2xl font-extrabold text-white">{grievances.length}</span>
-                <span className="text-[10px] text-white/70">
-                  ({grievances.filter(g => g.status !== 'RESOLVED').length} Pending)
-                </span>
-              </div>
+          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
+            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Grievances</span>
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className="text-base font-black text-white">{grievances.length}</span>
+              <span className="text-[10px] text-amber-400">
+                ({grievances.filter(g => g.status !== 'RESOLVED').length} Pending)
+              </span>
             </div>
-            <span className="text-[10px] text-amber-300 font-semibold mt-2 flex items-center gap-1 group-hover:underline">
-              <span>View Grievances List</span>
-              <span className="text-xs">&rarr;</span>
-            </span>
-          </button>
+          </div>
         </div>
-      </div>
+      </header>
+
+      {/* 3-LINE MENU DRAWER / MODAL */}
+      {showDrawerMenu && (
+        <div className="fixed inset-0 z-50 flex items-start justify-end bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white w-full max-w-sm h-full shadow-2xl border-l border-slate-200 flex flex-col p-5 space-y-4">
+            
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <Menu className="w-5 h-5 text-slate-900" />
+                <h3 className="font-black text-base text-slate-900">Mentor Modules</h3>
+              </div>
+              <button 
+                onClick={() => setShowDrawerMenu(false)}
+                className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="text-xs text-slate-500 font-semibold uppercase tracking-wider px-1">
+              Cohort Navigation
+            </div>
+
+            <div className="space-y-1.5 flex-1 overflow-y-auto">
+              <button
+                onClick={() => { setActiveModule('OVERVIEW'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'OVERVIEW' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <span>Dashboard Overview</span>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('NOTICES'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'NOTICES' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Megaphone className="w-4 h-4" />
+                  <span>Notices &amp; Broadcasts ({announcements.length})</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('BATCH_MEET'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'BATCH_MEET' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Calendar className="w-4 h-4" />
+                  <span>Batch Meetings &amp; Huddles</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('ATTENDANCE'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'ATTENDANCE' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Attendance &amp; Defaulters</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('PARENT_MEET'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'PARENT_MEET' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Users className="w-4 h-4" />
+                  <span>Parent Meet (PMM)</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('ACTIVITIES'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'ACTIVITIES' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Award className="w-4 h-4" />
+                  <span>100-Pt Activity Approvals</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('BUDDIES'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'BUDDIES' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <BookOpen className="w-4 h-4" />
+                  <span>Study Buddies Network</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('ROSTER'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'ROSTER' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Users className="w-4 h-4" />
+                  <span>Students Roster ({mentees.length})</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('GRIEVANCES'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'GRIEVANCES' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Grievances ({grievances.filter(g => g.status !== 'RESOLVED').length})</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+            </div>
+
+            <div className="pt-3 border-t border-slate-200">
+              <button
+                onClick={() => { setShowAuthorityModal(true); setShowDrawerMenu(false); }}
+                className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                <Building2 className="w-4 h-4 text-emerald-400" />
+                <span>Submit Authority Report</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Action Notification Banner */}
       {dataActionNotice && (
@@ -1133,105 +1215,712 @@ export default function GfmMentorPage() {
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{dataActionNotice}</span>
           </div>
-          <button onClick={() => setDataActionNotice(null)} className="text-emerald-700 hover:text-emerald-950 font-bold p-1">
+          <button onClick={() => setDataActionNotice(null)} className="text-emerald-700 hover:text-emerald-950 font-bold p-1 cursor-pointer">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
 
-      {/* Main Tab Switcher & Risk Filter Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-200 pb-3">
-        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-1 w-full lg:w-auto">
-          <button
-            onClick={() => setActiveTab('ROSTER')}
-            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
-              activeTab === 'ROSTER' 
-                ? 'bg-emerald-600 text-white shadow-sm' 
-                : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            <Users className="w-3.5 h-3.5" />
-            <span><span className="hidden sm:inline">Batch Students </span>Roster ({mentees.length})</span>
-          </button>
+      {/* SOLID CAPSULE TAB BAR */}
+      <div className="bg-white rounded-xl p-1.5 border border-slate-200 shadow-2xs flex items-center gap-1 overflow-x-auto no-scrollbar">
+        <button
+          onClick={() => setActiveModule('OVERVIEW')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'OVERVIEW'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Overview
+        </button>
 
-          <button
-            onClick={() => setActiveTab('ANNOUNCEMENTS')}
-            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
-              activeTab === 'ANNOUNCEMENTS' 
-                ? 'bg-emerald-600 text-white shadow-sm' 
-                : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            <Megaphone className="w-3.5 h-3.5" />
-            <span><span className="hidden sm:inline">Batch </span>Announcements ({announcements.length})</span>
-          </button>
+        <button
+          onClick={() => setActiveModule('NOTICES')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'NOTICES'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Notices ({announcements.length})
+        </button>
 
-          <button
-            onClick={() => setActiveTab('GRIEVANCES')}
-            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
-              activeTab === 'GRIEVANCES' 
-                ? 'bg-emerald-600 text-white shadow-sm' 
-                : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span><span className="hidden sm:inline">Student </span>Grievances</span>
-            {grievances.filter(g => g.status !== 'RESOLVED').length > 0 && (
-              <span className="w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] flex items-center justify-center font-bold">
-                {grievances.filter(g => g.status !== 'RESOLVED').length}
-              </span>
-            )}
-          </button>
+        <button
+          onClick={() => setActiveModule('BATCH_MEET')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'BATCH_MEET'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Batch Meet
+        </button>
 
-          <button
-            onClick={() => setActiveTab('MEETING')}
-            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
-              activeTab === 'MEETING' 
-                ? 'bg-emerald-600 text-white shadow-sm' 
-                : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            <Calendar className="w-3.5 h-3.5" />
-            <span><span className="hidden sm:inline">Weekly Batch </span>Meetings</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setActiveModule('ATTENDANCE')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer flex items-center gap-1.5 ${
+            activeModule === 'ATTENDANCE'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <span>Attendance</span>
+          {highRiskCount > 0 && (
+            <span className="px-1.5 py-0.2 bg-rose-500 text-white rounded-full text-[10px] font-bold">
+              {highRiskCount}
+            </span>
+          )}
+        </button>
 
-        {/* Risk Classification Quick Filter for Roster */}
-        {activeTab === 'ROSTER' && (
-          <div className="flex items-center gap-1.5 sm:gap-2 text-xs overflow-x-auto no-scrollbar pb-1 w-full lg:w-auto">
-            <span className="text-slate-500 font-semibold text-[11px] shrink-0">Filter:</span>
-            <button
-              onClick={() => setRiskFilter('ALL')}
-              className={`px-3 py-1 rounded-lg font-bold shrink-0 transition-colors ${
-                riskFilter === 'ALL' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              All ({mentees.length})
-            </button>
-            <button
-              onClick={() => setRiskFilter('HIGH_RISK')}
-              className={`px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 shrink-0 transition-colors ${
-                riskFilter === 'HIGH_RISK' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
-              }`}
-            >
-              <AlertTriangle className="w-3 h-3" />
-              <span>High Risk ({highRiskCount})</span>
-            </button>
-            <button
-              onClick={() => setRiskFilter('HEALTHY')}
-              className={`px-3 py-1 rounded-lg font-bold shrink-0 transition-colors ${
-                riskFilter === 'HEALTHY' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
-              }`}
-            >
-              Healthy ({mentees.length - highRiskCount})
-            </button>
-          </div>
-        )}
+        <button
+          onClick={() => setActiveModule('PARENT_MEET')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'PARENT_MEET'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Parent Meet
+        </button>
+
+        <button
+          onClick={() => setActiveModule('ACTIVITIES')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'ACTIVITIES'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          100-Pt Activity
+        </button>
+
+        <button
+          onClick={() => setActiveModule('BUDDIES')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'BUDDIES'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Study Buddies
+        </button>
+
+        <button
+          onClick={() => setActiveModule('ROSTER')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'ROSTER'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Students Roster ({mentees.length})
+        </button>
+
+        <button
+          onClick={() => setActiveModule('GRIEVANCES')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer flex items-center gap-1.5 ${
+            activeModule === 'GRIEVANCES'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <span>Grievances</span>
+          {grievances.filter(g => g.status !== 'RESOLVED').length > 0 && (
+            <span className="px-1.5 py-0.2 bg-rose-500 text-white rounded-full text-[10px] font-bold">
+              {grievances.filter(g => g.status !== 'RESOLVED').length}
+            </span>
+          )}
+        </button>
       </div>
 
-      {/* TAB 1: BATCH STUDENTS ROSTER */}
-      {activeTab === 'ROSTER' && (
+      {/* =========================================================================
+          MODULE 0: COCKPIT OVERVIEW (De-congested Dashboard)
+         ========================================================================= */}
+      {activeModule === 'OVERVIEW' && (
+        <div className="space-y-5 animate-in fade-in duration-150">
+          {/* Executive Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 1. Defaulters / Attendance */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Attendance Status</span>
+                <TrendingUp className="w-4 h-4 text-emerald-600" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-slate-900">{avgAttendance}%</span>
+                <span className="text-xs text-slate-500">Cohort Mean</span>
+              </div>
+              <p className="text-xs text-rose-600 font-bold">
+                {highRiskCount} students below 75% threshold
+              </p>
+              <button
+                onClick={() => setActiveModule('ATTENDANCE')}
+                className="w-full mt-2 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>Inspect Attendance</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* 2. Batch Meetings */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Weekly Batch Huddle</span>
+                <Calendar className="w-4 h-4 text-slate-400" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-slate-900">Zero Period</span>
+                <span className="text-xs text-slate-500">LH-2</span>
+              </div>
+              <p className="text-xs text-slate-600 line-clamp-1">
+                Unit test remedial &amp; guidance
+              </p>
+              <button
+                onClick={() => setActiveModule('BATCH_MEET')}
+                className="w-full mt-2 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>Open Meeting Log</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* 3. Parent Meet (PMM) */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Parent-Mentor Meet</span>
+                <Users className="w-4 h-4 text-indigo-600" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-slate-900">Mid-Sem</span>
+                <span className="text-xs text-slate-500">Cadence</span>
+              </div>
+              <p className="text-xs text-slate-600 line-clamp-1">
+                Push schedule to student dashboard
+              </p>
+              <button
+                onClick={() => setActiveModule('PARENT_MEET')}
+                className="w-full mt-2 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>Configure PMM</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* 4. 100-Pt Activity Submissions */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Activity Points</span>
+                <Award className="w-4 h-4 text-amber-500" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-slate-900">100-Pt</span>
+                <span className="text-xs text-slate-500">Verification</span>
+              </div>
+              <p className="text-xs text-slate-600 line-clamp-1">
+                Evaluate certificate attachments
+              </p>
+              <button
+                onClick={() => setActiveModule('ACTIVITIES')}
+                className="w-full mt-2 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>Verify Certificates</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Focus Split: Notices Snapshot & High-Risk Priority Mentees */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Left: Latest Batch Announcements */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Recent Batch Broadcasts</h3>
+                  <p className="text-xs text-slate-500">Announcements sent to all mentees in Div-B Batch-2</p>
+                </div>
+                <button
+                  onClick={() => setActiveModule('NOTICES')}
+                  className="text-xs font-bold text-emerald-700 hover:text-emerald-800 cursor-pointer"
+                >
+                  View All &rarr;
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {announcements.slice(0, 3).map((a) => (
+                  <div key={a.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-900 line-clamp-1">{a.title}</span>
+                      <span className="text-[10px] text-slate-400 font-mono shrink-0">
+                        {new Date(a.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-slate-600 line-clamp-2">{a.content}</p>
+                  </div>
+                ))}
+
+                {announcements.length === 0 && (
+                  <p className="text-xs text-slate-400 italic text-center py-6">No announcements broadcasted yet.</p>
+                )}
+              </div>
+
+              <button
+                onClick={() => setShowAnnouncementModal(true)}
+                className="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                <Megaphone className="w-4 h-4 text-emerald-400" />
+                <span>Broadcast New Announcement</span>
+              </button>
+            </div>
+
+            {/* Right: Urgent Priority Mentees (High Risk / Low Attendance) */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Priority Student Attention</h3>
+                  <p className="text-xs text-slate-500">Mentees requiring academic or attendance intervention</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setActiveModule('ROSTER');
+                    setRiskFilter('HIGH_RISK');
+                  }}
+                  className="text-xs font-bold text-rose-600 hover:text-rose-700 cursor-pointer"
+                >
+                  Filter High Risk &rarr;
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {mentees.slice(0, 4).map((student) => {
+                  const isLow = student.academicMetrics.overallAttendance < 75;
+                  return (
+                    <div key={student.studentId} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-3 text-xs">
+                      <div>
+                        <div className="font-bold text-slate-900">{student.name}</div>
+                        <div className="text-[11px] text-slate-500">Roll: {student.rollNo} &bull; Section {student.section}</div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          isLow 
+                            ? 'bg-rose-100 text-rose-800 border border-rose-200' 
+                            : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                        }`}>
+                          {student.academicMetrics.overallAttendance}% Att
+                        </span>
+                        <button
+                          onClick={() => handleSelectStudent(student)}
+                          className="px-2.5 py-1 bg-slate-900 text-white rounded-lg font-bold text-[11px] hover:bg-slate-800 cursor-pointer"
+                        >
+                          Dossier
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => setActiveModule('ROSTER')}
+                className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                <Users className="w-4 h-4 text-slate-700" />
+                <span>View Full Batch Roster ({mentees.length} Students)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODULE: ATTENDANCE & DEFAULTER TRACKER
+         ========================================================================= */}
+      {activeModule === 'ATTENDANCE' && (
+        <div className="space-y-5 animate-in fade-in duration-150">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div>
+                <h2 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-emerald-600" />
+                  <span>Batch Attendance &amp; Defaulter Tracking</span>
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Real-time monitoring of aggregate lecture attendance against the 75% institutional threshold
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs px-3 py-1 bg-slate-100 text-slate-800 font-bold rounded-lg border border-slate-200">
+                  Cohort Mean: {avgAttendance}%
+                </span>
+              </div>
+            </div>
+
+            {/* Critical Defaulters Warning Card */}
+            {highRiskCount > 0 && (
+              <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-rose-900 font-bold text-xs">
+                    <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span>Critical Attention: {highRiskCount} Students Below 75% Attendance Threshold</span>
+                  </div>
+                  <span className="text-[11px] font-semibold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full">
+                    Action Required
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-1">
+                  {mentees.filter(m => m.academicMetrics.overallAttendance < 75).map(student => (
+                    <div key={student.studentId} className="p-3 bg-white rounded-xl border border-rose-200 shadow-2xs text-xs space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-bold text-slate-900">{student.name}</h4>
+                          <span className="text-[11px] text-slate-500 font-mono">Roll: {student.rollNo}</span>
+                        </div>
+                        <span className="text-rose-600 font-black text-sm bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-200">
+                          {student.academicMetrics.overallAttendance}%
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 pt-1 border-t border-slate-100">
+                        <button
+                          onClick={() => handleOpenParentAlert(student)}
+                          className="flex-1 py-1.5 px-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] rounded-lg transition-colors text-center cursor-pointer"
+                        >
+                          Alert Parent
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedMenteeForInvite(student);
+                            setShowInviteModal(true);
+                          }}
+                          className="flex-1 py-1.5 px-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] rounded-lg transition-colors text-center cursor-pointer"
+                        >
+                          Invite 1-on-1
+                        </button>
+                        <button
+                          onClick={() => handleSelectStudent(student)}
+                          className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors cursor-pointer"
+                          title="Open Dossier"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Complete Batch Attendance Roster */}
+            <div className="space-y-2 pt-2">
+              <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider">Cohort Attendance Roster</h3>
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-[11px]">
+                    <tr>
+                      <th className="p-3">Roll No</th>
+                      <th className="p-3">Student Name</th>
+                      <th className="p-3">Attendance %</th>
+                      <th className="p-3">Status</th>
+                      <th className="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium">
+                    {mentees.map(m => {
+                      const att = m.academicMetrics.overallAttendance;
+                      const isLow = att < 75;
+                      return (
+                        <tr key={m.studentId} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="p-3 font-mono text-slate-600">{m.rollNo}</td>
+                          <td className="p-3 font-bold text-slate-900">{m.name}</td>
+                          <td className="p-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div 
+                                  className={`h-full ${isLow ? 'bg-rose-500' : 'bg-emerald-500'}`}
+                                  style={{ width: `${Math.min(100, att)}%` }}
+                                />
+                              </div>
+                              <span className={`font-bold ${isLow ? 'text-rose-600' : 'text-slate-800'}`}>
+                                {att}%
+                              </span>
+                            </div>
+                          </td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              isLow 
+                                ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+                                : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            }`}>
+                              {isLow ? 'Defaulter (<75%)' : 'Compliant'}
+                            </span>
+                          </td>
+                          <td className="p-3 text-right">
+                            <button
+                              onClick={() => handleSelectStudent(m)}
+                              className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-bold text-[11px] transition-colors cursor-pointer"
+                            >
+                              Dossier
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODULE: PARENT-MENTOR MEET (PMM) */}
+      {activeModule === 'PARENT_MEET' && (
+        <div className="space-y-5 animate-in fade-in duration-150">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div>
+                <h2 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                  <Users className="w-5 h-5 text-indigo-600" />
+                  <span>Mid-Semester Parent-Mentor Meeting (PMM) Console</span>
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Schedule PMM sessions for batch parents. Scheduling automatically dispatches notification to mentee dashboards.
+                </p>
+              </div>
+            </div>
+
+            {pmmNotice && (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>{pmmNotice}</span>
+              </div>
+            )}
+
+            {/* PMM Scheduler Form */}
+            <form onSubmit={handleSchedulePmm} className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Target Mentee / Student
+                </label>
+                <select
+                  value={selectedStudentDetail?.studentId || (mentees[0]?.studentId || '')}
+                  onChange={(e) => {
+                    const st = mentees.find(m => m.studentId === e.target.value);
+                    if (st) setSelectedStudentDetail(st);
+                  }}
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  {mentees.map(m => (
+                    <option key={m.studentId} value={m.studentId}>
+                      {m.name} ({m.rollNo})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Scheduled Meeting Date
+                </label>
+                <input
+                  type="date"
+                  value={pmmDate}
+                  onChange={(e) => setPmmDate(e.target.value)}
+                  required
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Time Slot
+                </label>
+                <input
+                  type="text"
+                  value={pmmTime}
+                  onChange={(e) => setPmmTime(e.target.value)}
+                  placeholder="e.g. 10:30 AM - 11:00 AM"
+                  required
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Venue / Location
+                </label>
+                <input
+                  type="text"
+                  value={pmmVenue}
+                  onChange={(e) => setPmmVenue(e.target.value)}
+                  placeholder="e.g. Classroom LH-2 / GFM Cabin"
+                  required
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block font-bold text-slate-700 mb-1">
+                  Agenda Notes &amp; Topics for Parent Consultation
+                </label>
+                <textarea
+                  value={pmmNotes}
+                  onChange={(e) => setPmmNotes(e.target.value)}
+                  rows={2}
+                  placeholder="Discussion points regarding attendance, unit test sessional marks, and academic progress..."
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                />
+              </div>
+
+              <div className="md:col-span-2 flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={schedulingPmm}
+                  className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <Calendar className="w-4 h-4 text-emerald-400" />
+                  <span>{schedulingPmm ? 'Pushing Schedule...' : 'Schedule PMM & Push Notification to Student'}</span>
+                </button>
+              </div>
+            </form>
+
+            {/* Info note */}
+            <div className="p-3.5 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-950 text-xs space-y-1">
+              <span className="font-bold block">Institutional PMM Protocol:</span>
+              <p className="text-slate-600 leading-relaxed">
+                Parent-Mentor Meetings are conducted once per semester (mid-term). The notification will immediately appear on the student&apos;s dashboard without requiring guardian signature paperwork.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODULE: 100-POINT ACTIVITY APPROVALS */}
+      {activeModule === 'ACTIVITIES' && (
+        <div className="space-y-5 animate-in fade-in duration-150">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div>
+                <h2 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                  <Award className="w-5 h-5 text-amber-500" />
+                  <span>100-Point Activity Approval Ledger</span>
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Inspect submitted certificates, verify issuing authorities and proof file attachments, and credit approved points
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {mentees.map(student => (
+                <div key={student.studentId} className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2.5 hover:border-slate-300 transition-colors">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-sm">{student.name}</h4>
+                      <span className="text-[11px] text-slate-500 font-mono">Roll: {student.rollNo}</span>
+                    </div>
+                    <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-800 font-bold border border-amber-200 text-[11px]">
+                      Activity Ledger
+                    </span>
+                  </div>
+
+                  <p className="text-slate-600 text-[11px] leading-relaxed">
+                    View student&apos;s claimed points, verify attached certificate PDF, and credit points towards their 100-point total.
+                  </p>
+
+                  <button
+                    onClick={() => {
+                      handleSelectStudent(student);
+                      setStudentModalTab('ACTIVITIES');
+                    }}
+                    className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <Award className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Inspect Certificates &amp; Verify</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODULE: STUDY BUDDIES NETWORK */}
+      {activeModule === 'BUDDIES' && (
+        <div className="space-y-5 animate-in fade-in duration-150">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div>
+                <h2 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-emerald-600" />
+                  <span>Study Buddies &amp; Peer Tutor Network</span>
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Peer academic tutoring network linking batch students for unit test preparation and remedial clinic assistance
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {peerTutorsList.map(tutor => (
+                <div key={tutor.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-sm">{tutor.name}</h4>
+                      <span className="text-[11px] text-slate-500 font-mono">Roll: {tutor.rollNo}</span>
+                    </div>
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 text-[10px]">
+                      Peer Mentor
+                    </span>
+                  </div>
+
+                  <div className="space-y-1 text-slate-700 text-[11px]">
+                    <div>Subject: <strong className="text-slate-900">{tutor.subject}</strong></div>
+                    <div>Venue: <strong className="text-slate-900">{tutor.venue}</strong></div>
+                    <div>Hours: <strong className="text-slate-900">{tutor.availableTime}</strong></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODULE: BATCH STUDENTS ROSTER */}
+      {activeModule === 'ROSTER' && (
         <div className="space-y-4">
+          {/* Risk Classification Quick Filter for Roster */}
+          <div className="flex items-center justify-between gap-2 text-xs overflow-x-auto no-scrollbar pb-1">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="text-slate-500 font-semibold text-[11px] shrink-0">Filter:</span>
+              <button
+                onClick={() => setRiskFilter('ALL')}
+                className={`px-3 py-1 rounded-lg font-bold shrink-0 transition-colors cursor-pointer ${
+                  riskFilter === 'ALL' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                All ({mentees.length})
+              </button>
+              <button
+                onClick={() => setRiskFilter('HIGH_RISK')}
+                className={`px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer ${
+                  riskFilter === 'HIGH_RISK' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                }`}
+              >
+                <AlertTriangle className="w-3 h-3" />
+                <span>High Risk ({highRiskCount})</span>
+              </button>
+              <button
+                onClick={() => setRiskFilter('HEALTHY')}
+                className={`px-3 py-1 rounded-lg font-bold shrink-0 transition-colors cursor-pointer ${
+                  riskFilter === 'HEALTHY' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                }`}
+              >
+                Healthy ({mentees.length - highRiskCount})
+              </button>
+            </div>
+          </div>
+
           {/* Search bar */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-4 bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
             <div className="relative flex-1">
@@ -1589,8 +2278,8 @@ export default function GfmMentorPage() {
         </div>
       )}
 
-      {/* TAB: BATCH ANNOUNCEMENTS & FORWARDED MESSAGES */}
-      {activeTab === 'ANNOUNCEMENTS' && (
+      {/* MODULE: BATCH ANNOUNCEMENTS & FORWARDED MESSAGES */}
+      {activeModule === 'NOTICES' && (
         <div className="space-y-4">
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
@@ -1725,8 +2414,8 @@ export default function GfmMentorPage() {
         </div>
       )}
 
-      {/* TAB 2: STUDENT GRIEVANCE INBOX */}
-      {activeTab === 'GRIEVANCES' && (
+      {/* MODULE: STUDENT GRIEVANCE INBOX */}
+      {activeModule === 'GRIEVANCES' && (
         <div className="space-y-4">
           <div className="bg-white p-5 rounded-2xl border border-slate-200">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
@@ -1808,8 +2497,8 @@ export default function GfmMentorPage() {
         </div>
       )}
 
-      {/* TAB 3: WEEKLY BATCH MEETINGS OVERVIEW */}
-      {activeTab === 'MEETING' && (
+      {/* MODULE: WEEKLY BATCH MEETINGS OVERVIEW */}
+      {activeModule === 'BATCH_MEET' && (
         <div className="space-y-4">
           <div className="bg-white p-5 rounded-2xl border border-slate-200">
             <div className="flex flex-wrap items-center justify-between pb-3 border-b border-slate-100 mb-4 gap-3">
@@ -1863,7 +2552,7 @@ export default function GfmMentorPage() {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-teal-800 via-emerald-800 to-slate-900 text-white p-6 relative">
+            <div className="bg-slate-900 text-white p-6 border-b border-slate-800 relative">
               <button
                 onClick={() => setShowAnnouncementModal(false)}
                 className="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-all cursor-pointer"
@@ -2078,7 +2767,7 @@ export default function GfmMentorPage() {
       {showMeetingModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-6 relative">
+            <div className="bg-slate-900 text-white p-6 border-b border-slate-800 relative">
               <button
                 onClick={() => setShowMeetingModal(false)}
                 className="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-all"
@@ -2209,7 +2898,7 @@ export default function GfmMentorPage() {
       {showInviteModal && selectedMenteeForInvite && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-5 relative">
+            <div className="bg-slate-900 text-white p-5 border-b border-slate-800 relative">
               <button
                 onClick={() => setShowInviteModal(false)}
                 className="absolute top-4 right-4 w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs font-bold transition-all"
@@ -2282,7 +2971,7 @@ export default function GfmMentorPage() {
       {selectedGrievance && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-5 relative">
+            <div className="bg-slate-900 text-white p-5 border-b border-slate-800 relative">
               <button
                 onClick={() => setSelectedGrievance(null)}
                 className="absolute top-4 right-4 w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs font-bold transition-all"
@@ -2343,7 +3032,7 @@ export default function GfmMentorPage() {
       {previewGreenBook && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-6 relative">
+            <div className="bg-slate-900 text-white p-6 border-b border-slate-800 relative">
               <button
                 onClick={() => setPreviewGreenBook(null)}
                 className="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-all"
@@ -2455,7 +3144,7 @@ export default function GfmMentorPage() {
       {showAuthorityModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-5 relative">
+            <div className="bg-slate-900 text-white p-5 border-b border-slate-800 relative">
               <button
                 onClick={() => setShowAuthorityModal(false)}
                 className="absolute top-4 right-4 w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs font-bold transition-all"
@@ -3481,7 +4170,7 @@ export default function GfmMentorPage() {
       {showParentAlertModal && selectedMenteeForAlert && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="bg-gradient-to-r from-rose-700 to-amber-800 p-5 text-white flex items-center justify-between">
+            <div className="bg-slate-900 border-b border-slate-800 p-5 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white">
                   <Phone className="w-5 h-5" />
@@ -3570,7 +4259,7 @@ export default function GfmMentorPage() {
       {showMeetingHistoryModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="bg-gradient-to-r from-slate-900 to-emerald-950 p-5 text-white flex items-center justify-between">
+            <div className="bg-slate-900 border-b border-slate-800 p-5 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
                   <History className="w-5 h-5" />

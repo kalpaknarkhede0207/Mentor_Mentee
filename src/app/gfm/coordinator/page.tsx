@@ -20,7 +20,7 @@ import {
   Send, 
   ShieldCheck, 
   Eye, 
-  Sparkles,
+  Menu,
   Calendar,
   School,
   ExternalLink,
@@ -72,8 +72,10 @@ export default function MentorCoordinatorPage() {
   const [reports, setReports] = useState<AuthorityReportData[]>([]);
   const [mentors, setMentors] = useState<MentorData[]>([]);
 
-  // Navigation tab
-  const [activeTab, setActiveTab] = useState<'MENTORS' | 'REPORTS' | 'ALLOCATION' | 'INSTITUTIONAL'>('MENTORS');
+  // Navigation module & drawer encapsulation
+  type CoordinatorModule = 'OVERVIEW' | 'MENTORS' | 'REPORTS' | 'ALLOCATION' | 'INSTITUTIONAL';
+  const [activeModule, setActiveModule] = useState<CoordinatorModule>('OVERVIEW');
+  const [showDrawerMenu, setShowDrawerMenu] = useState(false);
 
   // Modal 1: Student Names Only Modal
   const [selectedMentorForStudents, setSelectedMentorForStudents] = useState<MentorData | null>(null);
@@ -212,95 +214,202 @@ export default function MentorCoordinatorPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       
-      {/* Top Banner: Coordinator Overview */}
-      <div className="bg-gradient-to-r from-slate-900 via-teal-950 to-emerald-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 -mt-10 -mr-10 w-72 h-72 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+      {/* SOLID PROFESSIONAL HEADER */}
+      <header className="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-sm relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="text-xs bg-emerald-400/20 text-emerald-300 border border-emerald-300/30 px-3 py-0.5 rounded-full font-bold uppercase tracking-wider">
+            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+              <span className="text-[11px] bg-slate-800 text-emerald-400 border border-slate-700 px-2.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider">
                 Admin Command Center
               </span>
-              <span className="text-xs bg-white/10 text-white/90 px-3 py-0.5 rounded-full font-medium">
+              <span className="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded font-semibold">
                 Mentor Coordinator Authority
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
               Institutional Mentorship Oversight
             </h1>
-            <p className="text-xs sm:text-sm text-emerald-100/90 mt-1 max-w-2xl leading-relaxed">
-              Supervise all Guardian Faculty Members (GFMs), inspect submitted mentee reports, allocate division batches, and audit mentor activity health flags.
+            <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
+              Supervise Guardian Faculty Members (GFMs), inspect submitted mentee reports, allocate division batches, and audit mentor activity health flags.
             </p>
           </div>
 
-          {/* Quick Action Button */}
-          <div className="flex items-center gap-3">
+          {/* Quick Action Buttons & 3-Line Menu Trigger */}
+          <div className="flex items-center gap-2 flex-wrap">
             <button
-              onClick={() => setActiveTab('ALLOCATION')}
-              className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+              onClick={() => setActiveModule('ALLOCATION')}
+              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <UserPlus className="w-4 h-4" />
-              <span>Allocate Mentor to Batch</span>
+              <UserPlus className="w-4 h-4 text-emerald-400" />
+              <span>Allocate Mentor</span>
+            </button>
+
+            {/* 3-LINE MENU BUTTON */}
+            <button
+              onClick={() => setShowDrawerMenu(true)}
+              className="px-3.5 py-2 rounded-xl bg-white text-slate-900 hover:bg-slate-100 font-extrabold text-xs flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+              title="Open Navigation Menu"
+            >
+              <Menu className="w-4 h-4 text-slate-900" />
+              <span>Menu</span>
             </button>
           </div>
         </div>
 
-        {/* Coordinator Overview KPIs */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 mt-6 pt-6 border-t border-white/10 text-xs">
-          
-          {/* Total Mentors */}
-          <div className="bg-white/5 rounded-2xl p-3.5 border border-white/10">
-            <span className="text-emerald-200 block text-[11px] mb-0.5 font-bold uppercase tracking-wider">Total Mentors</span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-extrabold text-white">{totalMentors}</span>
-              <span className="text-[10px] text-white/70">Faculty Members</span>
+        {/* 4 Essential Metrics */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-800 text-xs">
+          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
+            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Total Mentors</span>
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className="text-base font-black text-white">{totalMentors}</span>
+              <span className="text-[10px] text-slate-400">Faculty Members</span>
             </div>
-            <p className="text-[10px] text-slate-400 mt-1">20–30 student cohort ratio</p>
           </div>
 
-          {/* Total Students */}
-          <div className="bg-white/5 rounded-2xl p-3.5 border border-white/10">
-            <span className="text-emerald-200 block text-[11px] mb-0.5 font-bold uppercase tracking-wider">Total Students</span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-extrabold text-white">{totalStudents}</span>
-              <span className="text-[10px] text-emerald-300">Mentees</span>
+          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
+            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Total Students</span>
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className="text-base font-black text-emerald-400">{totalStudents}</span>
+              <span className="text-[10px] text-slate-400">Mentees</span>
             </div>
-            <p className="text-[10px] text-slate-400 mt-1">Academic Green Book Registry</p>
           </div>
 
-          {/* Reports from Mentors */}
-          <div className="bg-white/5 rounded-2xl p-3.5 border border-white/10">
-            <span className="text-emerald-200 block text-[11px] mb-0.5 font-bold uppercase tracking-wider">Reports Received</span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-extrabold text-white">{reports.length}</span>
-              <span className="text-[10px] text-white/70">Official Dossiers</span>
+          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
+            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Reports Received</span>
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className="text-base font-black text-white">{reports.length}</span>
+              <span className="text-[10px] text-slate-400">Official Dossiers</span>
             </div>
-            <p className="text-[10px] text-emerald-300 mt-1">Submitted by batch mentors</p>
           </div>
 
-          {/* Mentor Activity RAG Health */}
-          <div className="bg-white/5 rounded-2xl p-3.5 border border-white/10">
-            <span className="text-emerald-200 block text-[11px] mb-0.5 font-bold uppercase tracking-wider">Activity Health Flags</span>
+          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
+            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Activity Flags</span>
             <div className="flex items-center gap-2 mt-1">
-              <span className="flex items-center gap-1 text-emerald-300 font-extrabold text-xs">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                {greenMentorsCount} Green
+              <span className="flex items-center gap-1 text-emerald-400 font-bold text-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                {greenMentorsCount}
               </span>
-              <span className="flex items-center gap-1 text-amber-300 font-extrabold text-xs">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                {orangeMentorsCount} Orange
+              <span className="flex items-center gap-1 text-amber-400 font-bold text-xs">
+                <span className="w-2 h-2 rounded-full bg-amber-400" />
+                {orangeMentorsCount}
               </span>
-              <span className="flex items-center gap-1 text-rose-300 font-extrabold text-xs">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
-                {redMentorsCount} Red
+              <span className="flex items-center gap-1 text-rose-400 font-bold text-xs">
+                <span className="w-2 h-2 rounded-full bg-rose-400" />
+                {redMentorsCount}
               </span>
             </div>
-            <p className="text-[10px] text-slate-400 mt-1">Report submission compliance</p>
           </div>
-
         </div>
-      </div>
+      </header>
+
+      {/* 3-LINE MENU DRAWER / MODAL */}
+      {showDrawerMenu && (
+        <div className="fixed inset-0 z-50 flex items-start justify-end bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white w-full max-w-sm h-full shadow-2xl border-l border-slate-200 flex flex-col p-5 space-y-4">
+            
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <Menu className="w-5 h-5 text-slate-900" />
+                <h3 className="font-black text-base text-slate-900">Coordinator Modules</h3>
+              </div>
+              <button 
+                onClick={() => setShowDrawerMenu(false)}
+                className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="text-xs text-slate-500 font-semibold uppercase tracking-wider px-1">
+              Administration
+            </div>
+
+            <div className="space-y-1.5 flex-1 overflow-y-auto">
+              <button
+                onClick={() => { setActiveModule('OVERVIEW'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'OVERVIEW' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <span>Dashboard Overview</span>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('MENTORS'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'MENTORS' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Users className="w-4 h-4" />
+                  <span>Mentors &amp; Activity ({mentors.length})</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('REPORTS'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'REPORTS' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <FileText className="w-4 h-4" />
+                  <span>Official Reports ({reports.length})</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('ALLOCATION'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'ALLOCATION' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <UserPlus className="w-4 h-4" />
+                  <span>Batch Allocation Console</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+
+              <button
+                onClick={() => { setActiveModule('INSTITUTIONAL'); setShowDrawerMenu(false); }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                  activeModule === 'INSTITUTIONAL' 
+                    ? 'bg-slate-900 text-white' 
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Building2 className="w-4 h-4" />
+                  <span>Institutional Model &amp; PMM</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70" />
+              </button>
+            </div>
+
+            <div className="pt-3 border-t border-slate-200">
+              <button
+                onClick={() => { setActiveModule('ALLOCATION'); setShowDrawerMenu(false); }}
+                className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                <UserPlus className="w-4 h-4 text-emerald-400" />
+                <span>Quick Allocate Mentor</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Global Notification Banner */}
       {noticeMessage && (
@@ -315,59 +424,274 @@ export default function MentorCoordinatorPage() {
         </div>
       )}
 
-      {/* Coordinator Tabs */}
-      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto">
-          <button
-            onClick={() => setActiveTab('MENTORS')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'MENTORS'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            Mentors &amp; Activity Flags ({mentors.length})
-          </button>
+      {/* SOLID CAPSULE TAB BAR */}
+      <div className="bg-white rounded-xl p-1.5 border border-slate-200 shadow-2xs flex items-center gap-1 overflow-x-auto no-scrollbar">
+        <button
+          onClick={() => setActiveModule('OVERVIEW')}
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'OVERVIEW'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Overview
+        </button>
 
-          <button
-            onClick={() => setActiveTab('REPORTS')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'REPORTS'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            Reports from Mentors ({reports.length})
-          </button>
+        <button
+          onClick={() => setActiveModule('MENTORS')}
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'MENTORS'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Mentors &amp; Activity ({mentors.length})
+        </button>
 
-          <button
-            onClick={() => setActiveTab('ALLOCATION')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'ALLOCATION'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            Batch Allocation Console
-          </button>
+        <button
+          onClick={() => setActiveModule('REPORTS')}
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'REPORTS'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Reports from Mentors ({reports.length})
+        </button>
 
-          <button
-            onClick={() => setActiveTab('INSTITUTIONAL')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'INSTITUTIONAL'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            Institutional Model &amp; PMM
-          </button>
-        </div>
+        <button
+          onClick={() => setActiveModule('ALLOCATION')}
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'ALLOCATION'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Batch Allocation Console
+        </button>
+
+        <button
+          onClick={() => setActiveModule('INSTITUTIONAL')}
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            activeModule === 'INSTITUTIONAL'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Institutional Model &amp; PMM
+        </button>
       </div>
+
+      {/* =========================================================================
+          TAB 0: EXECUTIVE OVERVIEW
+         ========================================================================= */}
+      {activeModule === 'OVERVIEW' && (
+        <div className="space-y-5 animate-in fade-in duration-150">
+          {/* Executive Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 1. Mentors RAG Health */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Mentor Compliance</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-slate-900">{mentors.length}</span>
+                <span className="text-xs text-slate-500">Mentors on Record</span>
+              </div>
+              <div className="flex items-center gap-2 pt-1 text-xs">
+                <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">
+                  {greenMentorsCount} Green
+                </span>
+                <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-800 font-bold border border-amber-200">
+                  {orangeMentorsCount} Orange
+                </span>
+                <span className="px-2 py-0.5 rounded bg-rose-50 text-rose-800 font-bold border border-rose-200">
+                  {redMentorsCount} Red
+                </span>
+              </div>
+              <button
+                onClick={() => setActiveModule('MENTORS')}
+                className="w-full mt-2 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>Open Mentors Directory</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* 2. Official Reports Received */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Reports Log</span>
+                <FileText className="w-4 h-4 text-slate-400" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-slate-900">{reports.length}</span>
+                <span className="text-xs text-slate-500">Submitted Dossiers</span>
+              </div>
+              <p className="text-xs text-slate-600 line-clamp-1">
+                {reports.filter(r => r.status === 'SUBMITTED' || !r.reviewedAt).length} pending institutional review
+              </p>
+              <button
+                onClick={() => setActiveModule('REPORTS')}
+                className="w-full mt-2 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>Review Reports</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* 3. Batch Cohort Allocations */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Batch Allocation</span>
+                <UserPlus className="w-4 h-4 text-slate-400" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-slate-900">{totalStudents}</span>
+                <span className="text-xs text-slate-500">Mentees Mapped</span>
+              </div>
+              <p className="text-xs text-slate-600 line-clamp-1">
+                Div-A, Div-B, Div-C cohorts assigned
+              </p>
+              <button
+                onClick={() => setActiveModule('ALLOCATION')}
+                className="w-full mt-2 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>Configure Batches</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* 4. Institutional Model & PMM */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Institutional Flow</span>
+                <Building2 className="w-4 h-4 text-slate-400" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-slate-900">Mid-Sem</span>
+                <span className="text-xs text-slate-500">PMM Protocol</span>
+              </div>
+              <p className="text-xs text-slate-600 line-clamp-1">
+                Academic &amp; Non-Academic bridge flow
+              </p>
+              <button
+                onClick={() => setActiveModule('INSTITUTIONAL')}
+                className="w-full mt-2 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>View Framework</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Focus Split: Mentors RAG Snapshot & Recent Reports Snapshot */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Left: Mentors Attention Snapshot */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Mentor Activity Status</h3>
+                  <p className="text-xs text-slate-500">Live RAG flag compliance across faculty</p>
+                </div>
+                <button 
+                  onClick={() => setActiveModule('MENTORS')}
+                  className="text-xs font-bold text-emerald-700 hover:text-emerald-800 cursor-pointer"
+                >
+                  View All &rarr;
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {mentors.slice(0, 4).map((mentor) => (
+                  <div key={mentor.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-slate-900 text-white font-bold flex items-center justify-center shrink-0">
+                        {mentor.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="font-bold text-slate-900">{mentor.name}</div>
+                        <div className="text-[11px] text-slate-500">{mentor.division} &bull; {mentor.batch} &bull; {mentor.subject}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        mentor.activityFlag === 'GREEN'
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          : mentor.activityFlag === 'ORANGE'
+                          ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                          : 'bg-rose-100 text-rose-800 border border-rose-200'
+                      }`}>
+                        {mentor.activityFlag}
+                      </span>
+                      <button
+                        onClick={() => setSelectedMentorForStudents(mentor)}
+                        className="px-2 py-1 bg-white border border-slate-200 rounded-lg text-slate-700 font-semibold hover:bg-slate-100 cursor-pointer text-[11px]"
+                      >
+                        {mentor.totalMentees} Mentees
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Reports & Inquiries Snapshot */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Recent Mentor Reports</h3>
+                  <p className="text-xs text-slate-500">Official dossiers submitted for administrative action</p>
+                </div>
+                <button 
+                  onClick={() => setActiveModule('REPORTS')}
+                  className="text-xs font-bold text-emerald-700 hover:text-emerald-800 cursor-pointer"
+                >
+                  Review All &rarr;
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {reports.slice(0, 3).map((rep) => (
+                  <div key={rep.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-900">{rep.mentorName} ({rep.division})</span>
+                      <span className="text-[11px] text-slate-400 font-mono">
+                        {new Date(rep.submittedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-slate-600 line-clamp-1">{rep.summaryObservations}</p>
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-[11px] text-slate-500">
+                        Attendance: <strong className="text-slate-800">{rep.averageAttendance}%</strong> &bull; Mentees: <strong className="text-slate-800">{rep.totalMentees}</strong>
+                      </span>
+                      <button
+                        onClick={() => {
+                          setSelectedReportForReview(rep);
+                          setCoordinatorRemarks(rep.authorityRemarks || '');
+                        }}
+                        className="px-2.5 py-1 bg-slate-900 text-white rounded-lg text-[11px] font-bold hover:bg-slate-800 cursor-pointer"
+                      >
+                        Inspect
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {reports.length === 0 && (
+                  <p className="text-xs text-slate-400 italic text-center py-6">No submitted reports on file.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* =========================================================================
           TAB 1: MENTORS DIRECTORY WITH RAG ACTIVITY FLAGS & CLICKABLE NAME ROSTER
          ========================================================================= */}
-      {activeTab === 'MENTORS' && (
+      {activeModule === 'MENTORS' && (
         <div className="space-y-4">
           
           {/* Filter Bar */}
@@ -587,7 +911,7 @@ export default function MentorCoordinatorPage() {
       {/* =========================================================================
           TAB 2: REPORTS FROM MENTORS SENT TO COORDINATOR
          ========================================================================= */}
-      {activeTab === 'REPORTS' && (
+      {activeModule === 'REPORTS' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
@@ -704,7 +1028,7 @@ export default function MentorCoordinatorPage() {
       {/* =========================================================================
           TAB 3: MENTOR ALLOCATION TO DIVISION & BATCHES
          ========================================================================= */}
-      {activeTab === 'ALLOCATION' && (
+      {activeModule === 'ALLOCATION' && (
         <div className="space-y-6">
           <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs max-w-2xl">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100 mb-5">
@@ -829,7 +1153,7 @@ export default function MentorCoordinatorPage() {
       {/* =========================================================================
           TAB 4: INSTITUTIONAL MODEL (NON-ACADEMIC BRIDGE & MID-SEM PMM)
          ========================================================================= */}
-      {activeTab === 'INSTITUTIONAL' && (
+      {activeModule === 'INSTITUTIONAL' && (
         <div className="space-y-6">
           
           <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
@@ -852,7 +1176,7 @@ export default function MentorCoordinatorPage() {
               {/* Card A: Dual Problem-Solving Architecture */}
               <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-2">
                 <span className="font-extrabold text-emerald-950 text-xs flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-emerald-700" />
+                  <Building2 className="w-4 h-4 text-emerald-700" />
                   <span>Academic vs Non-Academic Bridge Function</span>
                 </span>
                 <p className="text-slate-700 leading-relaxed">
@@ -891,7 +1215,7 @@ export default function MentorCoordinatorPage() {
           <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-slate-900 to-teal-950 text-white p-5 relative">
+            <div className="bg-slate-900 text-white p-5 border-b border-slate-800 relative">
               <button
                 onClick={() => setSelectedMentorForStudents(null)}
                 className="absolute top-4 right-4 w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs font-bold transition-all cursor-pointer"
@@ -984,7 +1308,7 @@ export default function MentorCoordinatorPage() {
       {selectedReportForReview && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-5 relative">
+            <div className="bg-slate-900 text-white p-5 border-b border-slate-800 relative">
               <button
                 onClick={() => setSelectedReportForReview(null)}
                 className="absolute top-4 right-4 w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs font-bold transition-all cursor-pointer"
