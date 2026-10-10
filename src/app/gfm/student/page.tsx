@@ -440,42 +440,42 @@ export default function StudentGfmPage() {
 
         {/* Essential 4-Pillar Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-800 text-xs">
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold">Attendance</span>
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Attendance</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className={`text-base font-black ${currentAtt < 75 ? 'text-rose-400' : 'text-emerald-400'}`}>
+              <span className={`text-base font-black tabular-nums ${currentAtt < 75 ? 'text-rose-400' : 'text-emerald-400'}`}>
                 {currentAtt}%
               </span>
-              <span className="text-[10px] text-slate-400">
+              <span className="text-[10px] text-slate-400 tabular-nums">
                 {currentAtt >= 75 ? `(${safeBuffer} buffer)` : '(Critical)'}
               </span>
             </div>
           </div>
 
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold">Sessional Marks</span>
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Sessional Marks</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-base font-black text-white">
+              <span className="text-base font-black tabular-nums text-white">
                 {greenBook?.cumulativePercentage || 78}%
               </span>
               <span className="text-[10px] text-slate-400">CIA Average</span>
             </div>
           </div>
 
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold">100-Pt Activity</span>
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">100-Pt Activity</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-base font-black text-amber-400">
+              <span className="text-base font-black tabular-nums text-amber-500">
                 {totalActivityPoints}/100
               </span>
               <span className="text-[10px] text-slate-400">Credited</span>
             </div>
           </div>
 
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold">Peer Buddies</span>
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Peer Buddies</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-base font-black text-emerald-400">
+              <span className="text-base font-black tabular-nums text-emerald-400">
                 {connectedBuddies.length}
               </span>
               <span className="text-[10px] text-slate-400">Active</span>
@@ -569,13 +569,13 @@ export default function StudentGfmPage() {
       )}
 
       {/* SOLID CAPSULE TAB BAR (Quick Access Bar) */}
-      <div className="bg-white rounded-xl p-1.5 border border-slate-200 shadow-2xs flex items-center gap-1 overflow-x-auto no-scrollbar">
+      <div className="bg-white rounded-xl p-1.5 border border-slate-200/90 shadow-xs flex items-center gap-1.5 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveModule('OVERVIEW')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'OVERVIEW' 
-              ? 'bg-slate-900 text-white' 
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold' 
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Overview
@@ -585,10 +585,10 @@ export default function StudentGfmPage() {
           <button
             key={item.id}
             onClick={() => setActiveModule(item.id)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 flex items-center gap-1.5 transition-colors cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 flex items-center gap-1.5 transition-all duration-150 cursor-pointer ${
               activeModule === item.id 
-                ? 'bg-slate-900 text-white' 
-                : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-slate-900 text-white shadow-xs font-bold' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
             }`}
           >
             {item.icon}
@@ -598,13 +598,13 @@ export default function StudentGfmPage() {
 
         <button
           onClick={() => setActiveModule('GRIEVANCES')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 flex items-center gap-1.5 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 flex items-center gap-1.5 transition-all duration-150 cursor-pointer ${
             activeModule === 'GRIEVANCES' 
-              ? 'bg-slate-900 text-white' 
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold' 
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
-          <MessageSquare className="w-3.5 h-3.5" />
+          <MessageSquare className="w-3.5 h-3.5 shrink-0" />
           <span>Grievances</span>
         </button>
       </div>

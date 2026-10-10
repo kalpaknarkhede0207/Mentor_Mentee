@@ -37,7 +37,35 @@
 body {
   background-color: #f7faff;
   color: #0d2347;
-  font-feature-settings: "rlig" 1, "calt" 1;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "rlig" 1, "calt" 1, "tnum" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tabular figures for non-jumping metrics */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Modern SaaS interactive micro-transitions & 5-state rules */
+button, a, input, select, textarea {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Active pressed state for tactile physical feel */
+button:active:not(:disabled),
+.active-press:active {
+  transform: scale(0.985);
+}
+
+/* Clean accessible keyboard focus ring */
+:focus-visible {
+  outline: 2px solid #0d2347;
+  outline-offset: 2px;
 }
 
 /* Custom smooth scrollbars */
@@ -56,7 +84,7 @@ body {
   background: #ff6200;
 }
 
-/* Pulse badge animation */
+/* Subtle badge pulse */
 @keyframes pulse-subtle {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.85; transform: scale(1.04); }

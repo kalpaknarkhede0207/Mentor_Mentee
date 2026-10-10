@@ -1001,36 +1001,36 @@ export default function GfmMentorPage() {
 
         {/* 4 Essential Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-800 text-xs">
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Batch Strength</span>
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Batch Strength</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-base font-black text-white">{mentees.length}</span>
+              <span className="text-base font-black tabular-nums text-white">{mentees.length}</span>
               <span className="text-[10px] text-slate-400">Students</span>
             </div>
           </div>
 
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">High Risk</span>
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">High Risk</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className={`text-base font-black ${highRiskCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+              <span className={`text-base font-black tabular-nums ${highRiskCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                 {highRiskCount}
               </span>
               <span className="text-[10px] text-slate-400">Att &lt; 75%</span>
             </div>
           </div>
 
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Mean Attendance</span>
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Mean Attendance</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-base font-black text-emerald-400">{avgAttendance}%</span>
+              <span className="text-base font-black tabular-nums text-emerald-400">{avgAttendance}%</span>
               <span className="text-[10px] text-slate-400">Cohort Mean</span>
             </div>
           </div>
 
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Grievances</span>
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Grievances</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-base font-black text-white">{grievances.length}</span>
+              <span className="text-base font-black tabular-nums text-white">{grievances.length}</span>
               <span className="text-[10px] text-amber-400">
                 ({grievances.filter(g => g.status !== 'RESOLVED').length} Pending)
               </span>
@@ -1222,13 +1222,13 @@ export default function GfmMentorPage() {
       )}
 
       {/* SOLID CAPSULE TAB BAR */}
-      <div className="bg-white rounded-xl p-1.5 border border-slate-200 shadow-2xs flex items-center gap-1 overflow-x-auto no-scrollbar">
+      <div className="bg-white rounded-xl p-1.5 border border-slate-200/90 shadow-xs flex items-center gap-1.5 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveModule('OVERVIEW')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'OVERVIEW'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Overview
@@ -1236,10 +1236,10 @@ export default function GfmMentorPage() {
 
         <button
           onClick={() => setActiveModule('NOTICES')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'NOTICES'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Notices ({announcements.length})
@@ -1247,10 +1247,10 @@ export default function GfmMentorPage() {
 
         <button
           onClick={() => setActiveModule('BATCH_MEET')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'BATCH_MEET'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Batch Meet
@@ -1258,15 +1258,15 @@ export default function GfmMentorPage() {
 
         <button
           onClick={() => setActiveModule('ATTENDANCE')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer flex items-center gap-1.5 ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
             activeModule === 'ATTENDANCE'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           <span>Attendance</span>
           {highRiskCount > 0 && (
-            <span className="px-1.5 py-0.2 bg-rose-500 text-white rounded-full text-[10px] font-bold">
+            <span className="px-1.5 py-0.2 bg-rose-500 text-white rounded-full text-[10px] font-bold tabular-nums">
               {highRiskCount}
             </span>
           )}
@@ -1274,10 +1274,10 @@ export default function GfmMentorPage() {
 
         <button
           onClick={() => setActiveModule('PARENT_MEET')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'PARENT_MEET'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Parent Meet
@@ -1285,10 +1285,10 @@ export default function GfmMentorPage() {
 
         <button
           onClick={() => setActiveModule('ACTIVITIES')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'ACTIVITIES'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           100-Pt Activity
@@ -1296,10 +1296,10 @@ export default function GfmMentorPage() {
 
         <button
           onClick={() => setActiveModule('BUDDIES')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'BUDDIES'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Study Buddies
@@ -1307,10 +1307,10 @@ export default function GfmMentorPage() {
 
         <button
           onClick={() => setActiveModule('ROSTER')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'ROSTER'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Students Roster ({mentees.length})
@@ -1318,15 +1318,15 @@ export default function GfmMentorPage() {
 
         <button
           onClick={() => setActiveModule('GRIEVANCES')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer flex items-center gap-1.5 ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
             activeModule === 'GRIEVANCES'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           <span>Grievances</span>
           {grievances.filter(g => g.status !== 'RESOLVED').length > 0 && (
-            <span className="px-1.5 py-0.2 bg-rose-500 text-white rounded-full text-[10px] font-bold">
+            <span className="px-1.5 py-0.2 bg-rose-500 text-white rounded-full text-[10px] font-bold tabular-nums">
               {grievances.filter(g => g.status !== 'RESOLVED').length}
             </span>
           )}

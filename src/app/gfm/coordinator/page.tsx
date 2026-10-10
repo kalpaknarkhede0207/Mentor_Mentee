@@ -258,33 +258,33 @@ export default function MentorCoordinatorPage() {
 
         {/* 4 Essential Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-800 text-xs">
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Total Mentors</span>
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Total Mentors</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-base font-black text-white">{totalMentors}</span>
+              <span className="text-base font-black tabular-nums text-white">{totalMentors}</span>
               <span className="text-[10px] text-slate-400">Faculty Members</span>
             </div>
           </div>
 
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Total Students</span>
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Total Students</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-base font-black text-emerald-400">{totalStudents}</span>
+              <span className="text-base font-black tabular-nums text-emerald-400">{totalStudents}</span>
               <span className="text-[10px] text-slate-400">Mentees</span>
             </div>
           </div>
 
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Reports Received</span>
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Reports Received</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-base font-black text-white">{reports.length}</span>
+              <span className="text-base font-black tabular-nums text-white">{reports.length}</span>
               <span className="text-[10px] text-slate-400">Official Dossiers</span>
             </div>
           </div>
 
-          <div className="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700">
-            <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Activity Flags</span>
-            <div className="flex items-center gap-2 mt-1">
+          <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 shadow-xs">
+            <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Activity Flags</span>
+            <div className="flex items-center gap-2.5 mt-1 tabular-nums">
               <span className="flex items-center gap-1 text-emerald-400 font-bold text-xs">
                 <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 {greenMentorsCount}
@@ -425,13 +425,13 @@ export default function MentorCoordinatorPage() {
       )}
 
       {/* SOLID CAPSULE TAB BAR */}
-      <div className="bg-white rounded-xl p-1.5 border border-slate-200 shadow-2xs flex items-center gap-1 overflow-x-auto no-scrollbar">
+      <div className="bg-white rounded-xl p-1.5 border border-slate-200/90 shadow-xs flex items-center gap-1.5 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveModule('OVERVIEW')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'OVERVIEW'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Overview
@@ -439,10 +439,10 @@ export default function MentorCoordinatorPage() {
 
         <button
           onClick={() => setActiveModule('MENTORS')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'MENTORS'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Mentors &amp; Activity ({mentors.length})
@@ -450,10 +450,10 @@ export default function MentorCoordinatorPage() {
 
         <button
           onClick={() => setActiveModule('REPORTS')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'REPORTS'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Reports from Mentors ({reports.length})
@@ -461,10 +461,10 @@ export default function MentorCoordinatorPage() {
 
         <button
           onClick={() => setActiveModule('ALLOCATION')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'ALLOCATION'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Batch Allocation Console
@@ -472,10 +472,10 @@ export default function MentorCoordinatorPage() {
 
         <button
           onClick={() => setActiveModule('INSTITUTIONAL')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs shrink-0 transition-all duration-150 cursor-pointer ${
             activeModule === 'INSTITUTIONAL'
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-slate-900 text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
           }`}
         >
           Institutional Model &amp; PMM
