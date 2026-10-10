@@ -9,7 +9,6 @@ import {
   GraduationCap, 
   LogOut, 
   Bell, 
-  Sparkles,
   School,
   FileCheck,
   Building2

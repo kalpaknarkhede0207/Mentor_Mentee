@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { studentId, title, category, pointsAwarded, issuingAuthority, date } = body;
+    const { studentId, title, category, pointsAwarded, issuingAuthority, date, certificateFileName, certificateFileUrl } = body;
 
     if (!studentId || !title || !category || !pointsAwarded) {
       return NextResponse.json({ success: false, error: 'Missing mandatory fields' }, { status: 400 });
@@ -24,6 +24,8 @@ export async function POST(request: Request) {
       category,
       pointsAwarded: Number(pointsAwarded) || 10,
       issuingAuthority: issuingAuthority || 'Institutional Department',
+      certificateFileName: certificateFileName || 'Certificate_Document.pdf',
+      certificateFileUrl: certificateFileUrl || '',
       date: date || new Date().toISOString().split('T')[0]
     });
 

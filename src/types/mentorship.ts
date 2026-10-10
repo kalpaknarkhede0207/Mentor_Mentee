@@ -223,6 +223,8 @@ export interface ActivityPointRecord {
   status: 'VERIFIED_AND_CREDITED' | 'PENDING_APPROVAL';
   date: string;
   issuingAuthority: string;
+  certificateFileName?: string;
+  certificateFileUrl?: string;
   verifiedBy?: string;
   verificationDate?: string;
 }

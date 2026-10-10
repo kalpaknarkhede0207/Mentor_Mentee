@@ -17,8 +17,7 @@ import {
   ChevronRight, 
   UserCheck, 
   UserX, 
-  ShieldAlert, 
-  Sparkles, 
+  User, 
   Plus, 
   Search, 
   Filter, 
@@ -145,7 +144,7 @@ export default function GfmMentorPage() {
   // Student Detail Modal & AI Analysis & Inline Green Book
   const [selectedStudentDetail, setSelectedStudentDetail] = useState<MenteeProfile | null>(null);
   const [showStudentDetailModal, setShowStudentDetailModal] = useState(false);
-  const [studentModalTab, setStudentModalTab] = useState<'GREEN_BOOK' | 'ACTIVITIES' | 'BUDDY_SYSTEM' | 'MEETINGS' | 'GRIEVANCES' | 'AI_REPORT'>('GREEN_BOOK');
+  const [studentModalTab, setStudentModalTab] = useState<'GREEN_BOOK' | 'ACTIVITIES' | 'BUDDY_SYSTEM' | 'MEETINGS' | 'PARENT_MEET' | 'GRIEVANCES'>('GREEN_BOOK');
   const [studentGreenBook, setStudentGreenBook] = useState<AcademicGreenBookDetails | null>(null);
   const [loadingStudentGreenBook, setLoadingStudentGreenBook] = useState(false);
   
@@ -163,6 +162,14 @@ export default function GfmMentorPage() {
   const [peerTutorsList, setPeerTutorsList] = useState<PeerTutor[]>([]);
   const [showAssignBuddyInline, setShowAssignBuddyInline] = useState(false);
   const [assigningBuddy, setAssigningBuddy] = useState(false);
+
+  // Parent-Mentor Meeting scheduling state for GFM
+  const [pmmDate, setPmmDate] = useState('2026-10-24');
+  const [pmmTime, setPmmTime] = useState('10:30 AM - 11:00 AM');
+  const [pmmVenue, setPmmVenue] = useState('Classroom LH-2 / GFM Cabin');
+  const [pmmNotes, setPmmNotes] = useState('Mid-semester academic progress review and attendance discussion.');
+  const [schedulingPmm, setSchedulingPmm] = useState(false);
+  const [pmmNotice, setPmmNotice] = useState<string | null>(null);
 
   const [generatingSuggestion, setGeneratingSuggestion] = useState(false);
   const [mentorSuggestion, setMentorSuggestion] = useState<string | null>(null);
@@ -328,6 +335,55 @@ export default function GfmMentorPage() {
       console.error('Error assigning peer tutor:', err);
     } finally {
       setAssigningBuddy(false);
+    }
+  };
+
+  // GFM Schedules Parent-Mentor Meeting (Pushes Notification to Student)
+  const handleSchedulePmm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedStudentDetail) return;
+    setSchedulingPmm(true);
+    setPmmNotice(null);
+    try {
+      const res = await fetch('/api/gfm/parent-meeting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: selectedStudentDetail.studentId,
+          scheduledDate: pmmDate,
+          timeSlot: pmmTime,
+          venue: pmmVenue,
+          parentNotes: pmmNotes,
+          mentorName: activeMentor.name || 'Dr. Ananya Sen'
+        })
+      });
+      const json = await res.json();
+      if (json.success) {
+        setStudentParentMeeting(json.data);
+        setPmmNotice(`✓ Meeting scheduled on ${pmmDate} (${pmmTime})! Notification pushed to ${selectedStudentDetail.name}.`);
+        setTimeout(() => setPmmNotice(null), 5000);
+      }
+    } catch (err) {
+      console.error('Error scheduling parent meeting:', err);
+    } finally {
+      setSchedulingPmm(false);
+    }
+  };
+
+  const handleCancelPmm = async () => {
+    if (!selectedStudentDetail) return;
+    try {
+      const res = await fetch(`/api/gfm/parent-meeting?studentId=${selectedStudentDetail.studentId}`, {
+        method: 'DELETE'
+      });
+      const json = await res.json();
+      if (json.success) {
+        setStudentParentMeeting(null);
+        setPmmNotice(`Scheduled meeting cancelled for ${selectedStudentDetail.name}.`);
+        setTimeout(() => setPmmNotice(null), 4000);
+      }
+    } catch (err) {
+      console.error('Error cancelling parent meeting:', err);
     }
   };
 
@@ -1346,7 +1402,7 @@ export default function GfmMentorPage() {
                               className="h-8 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors"
                               title="Start Live 1-on-1 Guidance"
                             >
-                              <Sparkles className="w-3.5 h-3.5" />
+                              <User className="w-3.5 h-3.5" />
                               <span>Start 1-1</span>
                             </Link>
 
@@ -1510,7 +1566,7 @@ export default function GfmMentorPage() {
                       onClick={(e) => e.stopPropagation()}
                       className="flex-1 h-9 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
                     >
-                      <Sparkles className="w-3.5 h-3.5" />
+                      <User className="w-3.5 h-3.5" />
                       <span>Start 1-on-1</span>
                     </Link>
 
@@ -2629,28 +2685,31 @@ export default function GfmMentorPage() {
 
                 <button
                   type="button"
-                  onClick={() => setStudentModalTab('GRIEVANCES')}
+                  onClick={() => setStudentModalTab('PARENT_MEET')}
                   className={`py-1.5 px-3 rounded-xl font-bold text-xs flex items-center gap-1.5 shrink-0 transition-all cursor-pointer ${
-                    studentModalTab === 'GRIEVANCES'
-                      ? 'bg-white text-indigo-900 shadow-2xs border border-indigo-300'
+                    studentModalTab === 'PARENT_MEET'
+                      ? 'bg-white text-slate-900 shadow-2xs border border-slate-300'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
-                  <MessageSquare className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Grievances &amp; Parent Alert</span>
+                  <Users className="w-3.5 h-3.5 text-slate-700" />
+                  <span>Schedule Parent Meet (PMM)</span>
+                  {studentParentMeeting && (
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  )}
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setStudentModalTab('AI_REPORT')}
+                  onClick={() => setStudentModalTab('GRIEVANCES')}
                   className={`py-1.5 px-3 rounded-xl font-bold text-xs flex items-center gap-1.5 shrink-0 transition-all cursor-pointer ${
-                    studentModalTab === 'AI_REPORT'
-                      ? 'bg-white text-blue-900 shadow-2xs border border-blue-300'
+                    studentModalTab === 'GRIEVANCES'
+                      ? 'bg-white text-slate-900 shadow-2xs border border-slate-300'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                  <span>AI Trajectory Report</span>
+                  <MessageSquare className="w-3.5 h-3.5 text-slate-700" />
+                  <span>Grievances &amp; Parent Alert</span>
                 </button>
               </div>
 
@@ -2971,9 +3030,14 @@ export default function GfmMentorPage() {
                                     {cert.title}
                                   </h6>
 
-                                  <p className="text-[11px] text-slate-500 flex items-center gap-1.5">
-                                    <span>Issuing Authority:</span>
-                                    <strong className="text-slate-700">{cert.issuingAuthority}</strong>
+                                  <p className="text-[11px] text-slate-500 flex flex-wrap items-center gap-2">
+                                    <span>Issuing Authority: <strong className="text-slate-700">{cert.issuingAuthority}</strong></span>
+                                    {cert.certificateFileName && (
+                                      <span className="inline-flex items-center gap-1 text-slate-700 font-semibold bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                        <FileText className="w-3 h-3 text-slate-500" />
+                                        <span>File: {cert.certificateFileName}</span>
+                                      </span>
+                                    )}
                                     {isVerified && cert.verifiedBy && (
                                       <span className="text-emerald-700 font-medium">
                                         &bull; Verified by {cert.verifiedBy} ({cert.verificationDate})
@@ -3201,14 +3265,146 @@ export default function GfmMentorPage() {
                   </div>
                 )}
 
-                {/* TAB 5: GRIEVANCES & PARENT ESCALATION (Strictly for this student) */}
+                {/* TAB 5: SCHEDULE PARENT-MENTOR MEETING (PMM) */}
+                {studentModalTab === 'PARENT_MEET' && (
+                  <div className="space-y-4 animate-in fade-in">
+                    {pmmNotice && (
+                      <div className="p-3 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl font-bold flex items-center justify-between text-xs">
+                        <span>{pmmNotice}</span>
+                        <button onClick={() => setPmmNotice(null)} className="text-emerald-700 hover:text-emerald-950 font-bold cursor-pointer">
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-slate-800" />
+                          <h4 className="font-extrabold text-sm text-slate-900">
+                            Parent-Mentor Meeting (PMM) for {selectedStudentDetail.name}
+                          </h4>
+                        </div>
+                        {studentParentMeeting && (
+                          <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                            Currently Scheduled
+                          </span>
+                        )}
+                      </div>
+
+                      {studentParentMeeting ? (
+                        <div className="space-y-3 bg-white p-4 rounded-xl border border-slate-200">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            <div>
+                              <span className="text-slate-400 block text-[10px] font-semibold">Scheduled Date &amp; Time:</span>
+                              <strong className="text-slate-900">{studentParentMeeting.scheduledDate} &bull; {studentParentMeeting.timeSlot}</strong>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block text-[10px] font-semibold">Meeting Venue:</span>
+                              <strong className="text-slate-900">{studentParentMeeting.venue}</strong>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block text-[10px] font-semibold">Assigned Mentor:</span>
+                              <strong className="text-slate-900">{studentParentMeeting.mentorName}</strong>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block text-[10px] font-semibold">Status:</span>
+                              <strong className="text-emerald-700 font-bold">{studentParentMeeting.status} (Notification Pushed to Student)</strong>
+                            </div>
+                          </div>
+
+                          {studentParentMeeting.parentNotes && (
+                            <div className="pt-2 border-t border-slate-100 text-slate-700 text-[11px]">
+                              <span className="text-slate-400 font-semibold block text-[10px]">Agenda / Remarks:</span>
+                              <p className="italic mt-0.5">{studentParentMeeting.parentNotes}</p>
+                            </div>
+                          )}
+
+                          <div className="pt-2 flex justify-end">
+                            <button
+                              type="button"
+                              onClick={handleCancelPmm}
+                              className="px-3.5 py-1.5 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 font-bold text-xs transition-colors cursor-pointer"
+                            >
+                              Cancel Scheduled Meeting
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <form onSubmit={handleSchedulePmm} className="space-y-3 pt-1">
+                          <p className="text-[11px] text-slate-600">
+                            Schedule an official consultation with the guardian of {selectedStudentDetail.name}. Once scheduled, a notification will be pushed immediately to the student dashboard.
+                          </p>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block font-bold text-slate-700 text-[11px] mb-1">Meeting Date:</label>
+                              <input
+                                type="date"
+                                required
+                                value={pmmDate}
+                                onChange={(e) => setPmmDate(e.target.value)}
+                                className="w-full p-2 bg-white border border-slate-300 rounded-xl text-slate-800 font-medium"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block font-bold text-slate-700 text-[11px] mb-1">Time Slot:</label>
+                              <input
+                                type="text"
+                                required
+                                value={pmmTime}
+                                onChange={(e) => setPmmTime(e.target.value)}
+                                placeholder="e.g. 10:30 AM - 11:00 AM"
+                                className="w-full p-2 bg-white border border-slate-300 rounded-xl text-slate-800 font-medium"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block font-bold text-slate-700 text-[11px] mb-1">Venue / Room:</label>
+                            <input
+                              type="text"
+                              required
+                              value={pmmVenue}
+                              onChange={(e) => setPmmVenue(e.target.value)}
+                              placeholder="e.g. Classroom LH-2 / GFM Cabin"
+                              className="w-full p-2 bg-white border border-slate-300 rounded-xl text-slate-800 font-medium"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block font-bold text-slate-700 text-[11px] mb-1">Meeting Agenda &amp; Remarks for Guardian:</label>
+                            <textarea
+                              rows={2}
+                              value={pmmNotes}
+                              onChange={(e) => setPmmNotes(e.target.value)}
+                              placeholder="e.g. Mid-semester academic progress review and attendance discussion."
+                              className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-xs"
+                            />
+                          </div>
+
+                          <button
+                            type="submit"
+                            disabled={schedulingPmm}
+                            className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
+                          >
+                            <Users className="w-3.5 h-3.5" />
+                            <span>{schedulingPmm ? 'Scheduling...' : 'Schedule Meeting & Push Notification'}</span>
+                          </button>
+                        </form>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 6: GRIEVANCES & PARENT ESCALATION (Strictly for this student) */}
                 {studentModalTab === 'GRIEVANCES' && (
                   <div className="space-y-4 animate-in fade-in">
-                    {/* Grievances Section */}
                     <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <MessageSquare className="w-4 h-4 text-indigo-600" />
+                          <MessageSquare className="w-4 h-4 text-slate-800" />
                           <h4 className="font-extrabold text-sm text-slate-900">
                             On-Device Grievances Lodged by {selectedStudentDetail.name} ({studentGrievancesList.length})
                           </h4>
@@ -3243,99 +3439,6 @@ export default function GfmMentorPage() {
                         ))
                       )}
                     </div>
-
-                    {/* Parent-Mentor Meeting Schedule */}
-                    {studentParentMeeting && (
-                      <div className="bg-indigo-50/50 border border-indigo-200 rounded-2xl p-4 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <strong className="text-indigo-950 text-xs flex items-center gap-1.5">
-                            <Phone className="w-3.5 h-3.5 text-indigo-600" />
-                            <span>Parent-Mentor Meeting (PMM) Scheduled</span>
-                          </strong>
-                          <span className="text-[10px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full">
-                            {studentParentMeeting.status}
-                          </span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-700">
-                          <div>Date &amp; Time: <strong>{studentParentMeeting.scheduledDate} ({studentParentMeeting.timeSlot})</strong></div>
-                          <div>Venue: <strong>{studentParentMeeting.venue}</strong></div>
-                        </div>
-                        {studentParentMeeting.parentNotes && (
-                          <p className="text-[11px] text-indigo-900 italic pt-1 border-t border-indigo-200/80">
-                            Guardian Note: &ldquo;{studentParentMeeting.parentNotes}&rdquo;
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* TAB 6: AI ANALYTICS & TRAJECTORY REPORT */}
-                {studentModalTab === 'AI_REPORT' && (
-                  <div className="space-y-4 animate-in fade-in">
-                    {/* Mentor Suggestion Generator */}
-                    <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
-                        <div>
-                          <h4 className="font-bold text-emerald-950 flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 text-emerald-700" />
-                            <span>Mentor Coaching Recommendations</span>
-                          </h4>
-                          <p className="text-[11px] text-emerald-800/80 mt-0.5">
-                            Synthesizes attendance pacing, sessional scores, and student friction points
-                          </p>
-                        </div>
-                        <button 
-                          onClick={handleGenerateSuggestion}
-                          disabled={generatingSuggestion}
-                          className="w-full sm:w-auto h-8.5 px-3.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-xs shadow-xs disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
-                        >
-                          <Sparkles className="w-3.5 h-3.5" />
-                          <span>{generatingSuggestion ? 'Synthesizing...' : 'Generate Suggestions'}</span>
-                        </button>
-                      </div>
-                      {mentorSuggestion ? (
-                        <div className="bg-white p-3.5 rounded-xl border border-emerald-200 text-emerald-900 font-medium leading-relaxed shadow-2xs animate-in fade-in text-xs">
-                          {mentorSuggestion}
-                        </div>
-                      ) : (
-                        <div className="bg-white/80 p-4 rounded-xl border border-dashed border-emerald-200 text-center text-emerald-800/80 italic text-xs">
-                          Click button to synthesize an actionable coaching plan for {selectedStudentDetail.name}.
-                        </div>
-                      )}
-                    </div>
-
-                    {/* AI Trajectory Report */}
-                    <div className="bg-blue-50/60 border border-blue-200 rounded-2xl p-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
-                        <div>
-                          <h4 className="font-bold text-blue-950 flex items-center gap-2">
-                            <Layers className="w-4 h-4 text-blue-700" />
-                            <span>Predictive Trajectory &amp; Debarment Risk</span>
-                          </h4>
-                          <p className="text-[11px] text-blue-800/80 mt-0.5">
-                            Evaluates institutional examination eligibility and term recovery pacing
-                          </p>
-                        </div>
-                        <button 
-                          onClick={handleGenerateAiReport}
-                          disabled={generatingAiReport}
-                          className="w-full sm:w-auto h-8.5 px-3.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl font-bold text-xs shadow-xs disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
-                        >
-                          <Layers className="w-3.5 h-3.5" />
-                          <span>{generatingAiReport ? 'Analyzing Data...' : 'Run Trajectory Analysis'}</span>
-                        </button>
-                      </div>
-                      {aiReport ? (
-                        <div className="bg-white p-3.5 rounded-xl border border-blue-200 text-slate-800 font-mono text-[11px] whitespace-pre-line leading-relaxed shadow-2xs animate-in fade-in">
-                          {aiReport}
-                        </div>
-                      ) : (
-                        <div className="bg-white/80 p-4 rounded-xl border border-dashed border-blue-200 text-center text-blue-800/80 italic text-xs">
-                          Produces a cumulative report with predictive risk metrics and recommended 1-on-1 action plans.
-                        </div>
-                      )}
-                    </div>
                   </div>
                 )}
 
@@ -3357,7 +3460,7 @@ export default function GfmMentorPage() {
                     href={`/gfm/session/${selectedStudentDetail.studentId}`}
                     className="w-full sm:w-auto h-9 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 transition-colors"
                   >
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <User className="w-3.5 h-3.5" />
                     <span>Start 1-on-1 Session</span>
                   </Link>
 

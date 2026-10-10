@@ -1394,26 +1394,7 @@ export const SEED_MEETING_HISTORIES: MeetingHistoryEntry[] = [
   }
 ];
 
-export const SEED_PARENT_MEETINGS: Record<string, ParentMeetingSchedule> = {
-  'stu-1001': {
-    id: 'pmm-1001',
-    studentId: 'stu-1001',
-    mentorId: 'mentor-3',
-    mentorName: 'Dr. Ananya Sen',
-    scheduledDate: '2026-10-24',
-    timeSlot: '10:30 AM - 10:50 AM',
-    venue: 'Classroom LH-2 / Mentor Cabin',
-    status: 'SCHEDULED',
-    parentAttendanceMode: 'IN_PERSON',
-    parentNotes: 'Father will visit institute in-person to discuss Mathematics marks recovery.',
-    dossierSummary: {
-      cumulativeAttendance: 70.0,
-      sessionalAverage: 52.0,
-      gfmObservation: 'Student shows sincere attitude but has missed consecutive morning batch check-ins and requires disciplined formula practice in Mathematics.',
-      complianceStatus: 'Requires attendance improvement to reach mandatory 75% threshold.'
-    }
-  }
-};
+export const SEED_PARENT_MEETINGS: Record<string, ParentMeetingSchedule> = {};
 
 export const SEED_ACTIVITY_POINTS: Record<string, ActivityPointRecord[]> = {
   'stu-1001': [
@@ -1426,6 +1407,7 @@ export const SEED_ACTIVITY_POINTS: Record<string, ActivityPointRecord[]> = {
       status: 'VERIFIED_AND_CREDITED',
       date: '2026-08-15',
       issuingAuthority: 'Institutional Social Responsibility Cell',
+      certificateFileName: 'Tree_Plantation_Social_Work_Cert.pdf',
       verifiedBy: 'Dr. Ananya Sen',
       verificationDate: '2026-08-20'
     },
@@ -1438,6 +1420,7 @@ export const SEED_ACTIVITY_POINTS: Record<string, ActivityPointRecord[]> = {
       status: 'VERIFIED_AND_CREDITED',
       date: '2026-09-05',
       issuingAuthority: 'Technical Innovation Council',
+      certificateFileName: 'Science_Robotics_Exhibition_Award.pdf',
       verifiedBy: 'Dr. Ananya Sen',
       verificationDate: '2026-09-10'
     },
@@ -1450,6 +1433,7 @@ export const SEED_ACTIVITY_POINTS: Record<string, ActivityPointRecord[]> = {
       status: 'VERIFIED_AND_CREDITED',
       date: '2026-09-18',
       issuingAuthority: 'Department of Physical Education',
+      certificateFileName: 'State_Badminton_Sports_Credential.pdf',
       verifiedBy: 'Dr. Ananya Sen',
       verificationDate: '2026-09-22'
     },
@@ -1461,7 +1445,8 @@ export const SEED_ACTIVITY_POINTS: Record<string, ActivityPointRecord[]> = {
       pointsAwarded: 15,
       status: 'PENDING_APPROVAL',
       date: '2026-10-04',
-      issuingAuthority: 'National Skill Development & Coursera'
+      issuingAuthority: 'National Skill Development & Coursera',
+      certificateFileName: 'FullStack_Web_Bootcamp_Cert.pdf'
     }
   ],
   'stu-1002': [

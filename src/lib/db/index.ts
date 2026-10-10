@@ -502,34 +502,50 @@ class MentorshipDatabase {
 
   // --- Parent-Mentor Meetings (PMM) ---
   public getParentMeeting(studentId: string): ParentMeetingSchedule | undefined {
-    if (this.parentMeetings[studentId]) {
-      return this.parentMeetings[studentId];
-    }
-    const mentee = this.mentees.find(m => m.studentId === studentId);
-    if (!mentee) return undefined;
+    return this.parentMeetings[studentId];
+  }
 
-    const defaultPmm: ParentMeetingSchedule = {
-      id: `pmm-${studentId}`,
+  public scheduleParentMeeting(
+    studentId: string, 
+    details: {
+      scheduledDate: string;
+      timeSlot: string;
+      venue?: string;
+      parentNotes?: string;
+      mentorName?: string;
+    }
+  ): ParentMeetingSchedule {
+    const mentee = this.mentees.find(m => m.studentId === studentId);
+    const newSchedule: ParentMeetingSchedule = {
+      id: `pmm-${studentId}-${Date.now()}`,
       studentId,
-      mentorId: mentee.mentorId || 'mentor-3',
-      mentorName: 'Dr. Ananya Sen',
-      scheduledDate: '2026-10-24',
-      timeSlot: '10:30 AM - 10:50 AM',
-      venue: 'Classroom LH-2 / GFM Cabin',
+      mentorId: mentee?.mentorId || 'mentor-3',
+      mentorName: details.mentorName || 'Dr. Ananya Sen',
+      scheduledDate: details.scheduledDate,
+      timeSlot: details.timeSlot,
+      venue: details.venue || 'Classroom LH-2 / GFM Cabin',
       status: 'SCHEDULED',
       parentAttendanceMode: 'IN_PERSON',
-      parentNotes: 'Father / Guardian invited for mid-semester progress review.',
+      parentNotes: details.parentNotes || 'Mid-semester performance review and academic progress discussion.',
       dossierSummary: {
-        cumulativeAttendance: mentee.academicMetrics.overallAttendance,
-        sessionalAverage: mentee.academicMetrics.lastTermPercentage,
-        gfmObservation: `${mentee.name} academic performance stands at ${mentee.academicMetrics.lastTermPercentage}%. Attendance is ${mentee.academicMetrics.overallAttendance}%.`,
-        complianceStatus: mentee.academicMetrics.overallAttendance < 75 
+        cumulativeAttendance: mentee?.academicMetrics.overallAttendance || 75,
+        sessionalAverage: mentee?.academicMetrics.lastTermPercentage || 70,
+        gfmObservation: mentee ? `${mentee.name} academic performance stands at ${mentee.academicMetrics.lastTermPercentage}%. Attendance is ${mentee.academicMetrics.overallAttendance}%.` : 'Academic review session.',
+        complianceStatus: (mentee?.academicMetrics.overallAttendance || 75) < 75 
           ? 'Requires attendance recovery to reach mandatory 75% threshold.' 
           : 'Compliant with mandatory 75% attendance threshold.'
       }
     };
-    this.parentMeetings[studentId] = defaultPmm;
-    return defaultPmm;
+    this.parentMeetings[studentId] = newSchedule;
+    return newSchedule;
+  }
+
+  public cancelParentMeeting(studentId: string): boolean {
+    if (this.parentMeetings[studentId]) {
+      delete this.parentMeetings[studentId];
+      return true;
+    }
+    return false;
   }
 
   public updateParentMeetingAcknowledgment(studentId: string, mode: 'IN_PERSON' | 'VIRTUAL_MEET', notes?: string): ParentMeetingSchedule | undefined {
