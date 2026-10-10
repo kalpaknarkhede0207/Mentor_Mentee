@@ -216,11 +216,11 @@ export default function GfmLoginPage() {
               <button
                 type="button"
                 onClick={() => handleMentorQuickLogin('mentor-3', 'Dr. Ananya Sen')}
-                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition-all flex items-center justify-between group"
+                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition-all flex items-center justify-between group cursor-pointer"
               >
                 <div>
                   <div className="font-bold text-slate-900 text-sm">Dr. Ananya Sen</div>
-                  <div className="text-xs text-slate-500">GFM Batch 10-A &bull; English &amp; Humanities Lead</div>
+                  <div className="text-xs text-slate-500">GFM Div-B &bull; Batch-2 (36 Students) &bull; English &amp; Humanities Lead</div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-transform" />
               </button>
@@ -228,11 +228,11 @@ export default function GfmLoginPage() {
               <button
                 type="button"
                 onClick={() => handleMentorQuickLogin('mentor-1', 'Mr. R.K. Sharma')}
-                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition-all flex items-center justify-between group"
+                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition-all flex items-center justify-between group cursor-pointer"
               >
                 <div>
                   <div className="font-bold text-slate-900 text-sm">Mr. R.K. Sharma</div>
-                  <div className="text-xs text-slate-500">GFM Batch 11-A (Science) &bull; Senior Physics</div>
+                  <div className="text-xs text-slate-500">GFM Div-A &bull; Batch-1 (34 Students) &bull; Senior Physics</div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-transform" />
               </button>
@@ -240,11 +240,11 @@ export default function GfmLoginPage() {
               <button
                 type="button"
                 onClick={() => handleMentorQuickLogin('mentor-2', 'Mrs. Sunita Roy')}
-                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition-all flex items-center justify-between group"
+                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition-all flex items-center justify-between group cursor-pointer"
               >
                 <div>
                   <div className="font-bold text-slate-900 text-sm">Mrs. Sunita Roy</div>
-                  <div className="text-xs text-slate-500">GFM Batch 12-B (Commerce) &bull; Senior Accounts</div>
+                  <div className="text-xs text-slate-500">GFM Div-C &bull; Batch-3 (32 Students) &bull; Senior Accounts</div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-transform" />
               </button>
