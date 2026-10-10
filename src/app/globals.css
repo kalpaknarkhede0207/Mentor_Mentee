@@ -35,8 +35,8 @@
 }
 
 body {
-  background-color: #fbf9f5;
-  color: #0b172a;
+  background-color: #f7faff;
+  color: #0d2347;
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
@@ -46,14 +46,14 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f2efe9;
+  background: #f0f5fc;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d3cebf;
+  background: #c4d5ed;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #8c95a6;
+  background: #ff6200;
 }
 
 /* Pulse badge animation */

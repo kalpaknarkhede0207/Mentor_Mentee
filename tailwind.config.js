@@ -10,81 +10,78 @@ module.exports = {
     extend: {
       colors: {
         /**
-         * THE PRESTIGIOUS ACADEMIC COLOR PSYCHOLOGY
-         * Secondary Schools, Universities, High-End Academies
+         * ROYAL BLUE & ELECTRIC ORANGE (THE HIGH-IMPACT COMPLEMENTARY)
          * 
-         * 1. Navy Blue (Oxford / Collegiate):
-         *    Instils authority for faculty and institutional pride for parents & leadership.
-         *    Mapped across dark slate values (slate-950, 900, 800, 700).
+         * The Psychology:
+         * Blue triggers feelings of trust, stability, and intelligence.
+         * Orange is the ultimate color of enthusiasm, creativity, and uninhibited energy.
          * 
-         * 2. Warm Gray (Parchment / Archival Linen):
-         *    Instils parental dignity and an elevated, scholarly stationery feel.
-         *    Mapped across light slate values (slate-50, 100, 200, 300).
-         * 
-         * 3. Marigold Yellow (Academic Gold):
-         *    Focused energy for students, academic honors, achievement points, and active focal points.
+         * Why it works:
+         * Sitting directly opposite on the color wheel creates an immediate visual vibration.
+         * The calm authority of blue prevents the orange from looking cheap, resulting in
+         * a vibrant, highly professional, and deeply impressive look.
          */
         slate: {
-          50: '#fbf9f5',   // Warm Gray - Ivory / Academic Parchment
-          100: '#f2efe9',  // Warm Gray - Soft card / pill background
-          200: '#e5e1d8',  // Warm Gray - Refined border & outlines
-          300: '#d3cebf',  // Warm Gray - Subtle divider
-          400: '#8c95a6',  // Scholarly Blue-Gray - Metadata & timestamps
-          500: '#5c697f',  // Dignified Slate-Navy - Body secondary text
-          600: '#3a4b68',  // Mid Navy - Secondary interactive
-          700: '#23395d',  // Deep Academic Navy
-          800: '#142542',  // Collegiate Navy - Headers, modal bars, drawers
-          900: '#0b172a',  // Oxford Navy Blue - High institutional authority
-          950: '#060d18',  // Midnight Navy - Deepest anchor
+          50: '#f7faff',   // Crisp Royal Tint - High-Impact Bright Canvas
+          100: '#f0f5fc',  // Soft Royal Blue Tint - Card & Pill Background
+          200: '#e0ebf8',  // Crisp Royal Border & Outlines
+          300: '#c4d5ed',  // Subtle Royal Divider
+          400: '#8da6cc',  // Muted Royal Blue-Gray - Metadata & Icons
+          500: '#5072a7',  // Dignified Royal Secondary Text
+          600: '#255bb5',  // Vivid Royal Blue - Interactive Highlights
+          700: '#1c4585',  // Deep Royal Blue
+          800: '#143261',  // Solid Collegiate Royal Blue - Drawers, Headers, Cards
+          900: '#0d2347',  // Deep Authority Royal Blue - Foundation & Text
+          950: '#07152b',  // Midnight Royal Blue - Anchor
         },
-        navy: {
-          50: '#f0f4f9',
-          100: '#dde6f2',
-          200: '#bed0e6',
-          300: '#92b2d4',
-          400: '#5f8ebd',
-          500: '#3d6ea6',
-          600: '#2b548a',
-          700: '#23395d',
-          800: '#142542',
-          900: '#0b172a',
-          950: '#060d18',
+        royal: {
+          50: '#f7faff',
+          100: '#f0f5fc',
+          200: '#e0ebf8',
+          300: '#c4d5ed',
+          400: '#8da6cc',
+          500: '#255bb5',
+          600: '#1c4585',
+          700: '#143261',
+          800: '#0d2347',
+          900: '#07152b',
+          950: '#040b17',
         },
-        warmGray: {
-          50: '#fbf9f5',
-          100: '#f2efe9',
-          200: '#e5e1d8',
-          300: '#d3cebf',
-          400: '#a8a29e',
-          500: '#78716c',
-          600: '#57534e',
-          700: '#44403c',
-          800: '#292524',
-          900: '#1c1917',
-        },
-        marigold: {
-          50: '#fefce8',
-          100: '#fef9c3',
-          200: '#fef08a',
-          300: '#fde047',
-          400: '#fbbf24',
-          500: '#f59e0b',  // Radiant Marigold Yellow
-          600: '#d97706',  // Academic Gold
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
+        orange: {
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#ff8533',  // Electric Orange Tint
+          500: '#ff6200',  // Pure Electric Orange - High Visual Vibration
+          600: '#ea5200',  // Punchy Electric Orange
+          700: '#c23c00',
+          800: '#9a3000',
+          900: '#7c2600',
         },
         amber: {
-          50: '#fefce8',
-          100: '#fef9c3',
-          200: '#fef08a',
-          300: '#fde047',
-          400: '#fbbf24',  // Radiant Marigold Yellow
-          500: '#f59e0b',  // Radiant Marigold Yellow
-          600: '#d97706',  // Academic Gold
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#ff8533',  // Electric Orange Accent
+          500: '#ff6200',  // Pure Electric Orange
+          600: '#ea5200',  // Punchy Electric Orange
+          700: '#c23c00',
+          800: '#9a3000',
+          900: '#7c2600',
+        },
+        marigold: {
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#ff8533',
+          500: '#ff6200',
+          600: '#ea5200',
+          700: '#c23c00',
+          800: '#9a3000',
+          900: '#7c2600',
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -92,32 +89,32 @@ module.exports = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#0b172a",
-          foreground: "#fbf9f5",
+          DEFAULT: "#0d2347", // Royal Blue
+          foreground: "#ffffff",
         },
         secondary: {
-          DEFAULT: "#f2efe9",
-          foreground: "#0b172a",
+          DEFAULT: "#f0f5fc",
+          foreground: "#0d2347",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "#f2efe9",
-          foreground: "#5c697f",
+          DEFAULT: "#f0f5fc",
+          foreground: "#5072a7",
         },
         accent: {
-          DEFAULT: "#f59e0b",
-          foreground: "#0b172a",
+          DEFAULT: "#ff6200", // Electric Orange
+          foreground: "#ffffff",
         },
         popover: {
           DEFAULT: "#ffffff",
-          foreground: "#0b172a",
+          foreground: "#0d2347",
         },
         card: {
           DEFAULT: "#ffffff",
-          foreground: "#0b172a",
+          foreground: "#0d2347",
         },
       },
       borderRadius: {
