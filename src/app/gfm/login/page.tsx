@@ -10,7 +10,6 @@ import {
   KeyRound, 
   User, 
   AlertCircle,
-  Sparkles,
   School,
   Building2
 } from 'lucide-react';
@@ -74,31 +73,29 @@ export default function GfmLoginPage() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
-        {/* Header Branding */}
-        <div className="bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-800 text-white p-5 sm:p-8 text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 -mr-12 -mt-12 w-40 h-40 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-          
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-md mb-3 border border-white/20">
-            <BookMarked className="w-7 h-7 text-white" />
+    <div className="min-h-[85vh] flex items-center justify-center p-4 bg-slate-50/50">
+      <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+        {/* Solid Header Branding */}
+        <div className="bg-slate-900 text-white p-6 sm:p-8 text-center border-b border-slate-800">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shadow-sm mb-3">
+            <BookMarked className="w-6 h-6 text-white" />
           </div>
 
           <h1 className="text-xl font-extrabold tracking-tight">
-            Guardian Faculty Member (GFM) App
+            Guardian Faculty Member (GFM) Portal
           </h1>
-          <p className="text-xs text-emerald-100 mt-1 flex items-center justify-center gap-1">
-            <School className="w-3.5 h-3.5 text-emerald-200" />
-            <span>Academic Green Book Mentorship &amp; Grievance Cell</span>
+          <p className="text-xs text-slate-400 mt-1 flex items-center justify-center gap-1.5">
+            <School className="w-3.5 h-3.5 text-slate-400" />
+            <span>Academic Mentorship &amp; Grievance Cell</span>
           </p>
 
-          {/* Role Tabs */}
-          <div className="flex bg-emerald-950/40 p-1 rounded-xl mt-6 text-xs font-bold border border-white/10">
+          {/* Solid Capsule Role Tabs */}
+          <div className="flex bg-slate-800 p-1 rounded-xl mt-6 text-xs font-semibold border border-slate-700">
             <button
               type="button"
               onClick={() => { setActiveTab('STUDENT'); setError(null); }}
               className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                activeTab === 'STUDENT' ? 'bg-white text-emerald-800 shadow-sm' : 'text-emerald-100 hover:text-white'
+                activeTab === 'STUDENT' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-300 hover:text-white'
               }`}
             >
               <GraduationCap className="w-3.5 h-3.5" />
@@ -108,7 +105,7 @@ export default function GfmLoginPage() {
               type="button"
               onClick={() => { setActiveTab('MENTOR'); setError(null); }}
               className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                activeTab === 'MENTOR' ? 'bg-white text-emerald-800 shadow-sm' : 'text-emerald-100 hover:text-white'
+                activeTab === 'MENTOR' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-300 hover:text-white'
               }`}
             >
               <Users className="w-3.5 h-3.5" />
@@ -116,9 +113,9 @@ export default function GfmLoginPage() {
             </button>
             <button
               type="button"
-              onClick={() => { setActiveTab('COORDINATOR' as any); setError(null); }}
+              onClick={() => { setActiveTab('COORDINATOR'); setError(null); }}
               className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                (activeTab as any) === 'COORDINATOR' ? 'bg-white text-emerald-800 shadow-sm' : 'text-emerald-100 hover:text-white'
+                activeTab === 'COORDINATOR' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-300 hover:text-white'
               }`}
             >
               <Building2 className="w-3.5 h-3.5" />
@@ -128,19 +125,19 @@ export default function GfmLoginPage() {
         </div>
 
         {/* Content Area */}
-        <div className="p-5 sm:p-8">
+        <div className="p-6 sm:p-8">
           {activeTab === 'STUDENT' ? (
             <form onSubmit={handleStudentLogin} className="space-y-4">
               {error && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                   <span>{error}</span>
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1 flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-emerald-600" />
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-slate-500" />
                   <span>Student Roll Number</span>
                 </label>
                 <input
@@ -149,13 +146,13 @@ export default function GfmLoginPage() {
                   value={rollNo}
                   onChange={(e) => setRollNo(e.target.value)}
                   placeholder="e.g. 10A-01 or 11A-01"
-                  className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 font-semibold text-slate-900 bg-slate-50/50"
+                  className="w-full text-sm p-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 font-medium text-slate-900 bg-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1 flex items-center gap-1.5">
-                  <KeyRound className="w-3.5 h-3.5 text-emerald-600" />
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <KeyRound className="w-3.5 h-3.5 text-slate-500" />
                   <span>Password</span>
                 </label>
                 <input
@@ -164,111 +161,120 @@ export default function GfmLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 font-semibold text-slate-900 bg-slate-50/50"
+                  className="w-full text-sm p-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 font-medium text-slate-900 bg-white"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-md shadow-emerald-600/30 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
-                <span>{loading ? 'Authenticating...' : 'Enter GFM Batch'}</span>
+                <span>{loading ? 'Authenticating...' : 'Sign In to Student Portal'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
-              {/* 1-Click Demo Logins */}
+              {/* Demo Helper Accounts */}
               <div className="pt-4 border-t border-slate-100">
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                  1-Click Demo Student Accounts:
+                  Demo Student Accounts
                 </span>
                 <div className="flex flex-wrap gap-2 text-xs">
                   <button
                     type="button"
                     onClick={() => handleQuickStudentLogin('10A-01')}
-                    className="px-2.5 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-lg border border-slate-200 font-semibold transition-colors"
+                    className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-200 font-medium transition-colors cursor-pointer"
                   >
                     10A-01 (Karan Vashisht)
                   </button>
                   <button
                     type="button"
                     onClick={() => handleQuickStudentLogin('11A-01')}
-                    className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-lg border border-rose-200 font-semibold transition-colors"
+                    className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-200 font-medium transition-colors cursor-pointer"
                   >
-                    11A-01 (Aarav - High Risk)
+                    11A-01 (Aarav Verma)
                   </button>
                   <button
                     type="button"
                     onClick={() => handleQuickStudentLogin('11A-06')}
-                    className="px-2.5 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-lg border border-slate-200 font-semibold transition-colors"
+                    className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-200 font-medium transition-colors cursor-pointer"
                   >
-                    11A-06 (Aditya)
+                    11A-06 (Aditya Joshi)
                   </button>
                 </div>
               </div>
             </form>
           ) : activeTab === 'MENTOR' ? (
-            <div className="space-y-4">
-              <span className="text-xs text-slate-500 block mb-2">
-                Select your faculty profile to access your GFM Batch Dashboard:
+            <div className="space-y-3">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+                Select Faculty Profile:
               </span>
 
               <button
                 type="button"
                 onClick={() => handleMentorQuickLogin('mentor-3', 'Dr. Ananya Sen')}
-                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition-all flex items-center justify-between group cursor-pointer"
+                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-left transition-all flex items-center justify-between group cursor-pointer"
               >
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">Dr. Ananya Sen</div>
-                  <div className="text-xs text-slate-500">GFM Div-B &bull; Batch-2 (36 Students) &bull; English &amp; Humanities Lead</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-900 text-sm">Dr. Ananya Sen</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">Div-B &bull; Batch-2</span>
+                  </div>
+                  <div className="text-xs text-slate-500 mt-0.5">36 Mentees &bull; English &amp; Humanities Lead</div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-all" />
               </button>
 
               <button
                 type="button"
                 onClick={() => handleMentorQuickLogin('mentor-1', 'Mr. R.K. Sharma')}
-                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition-all flex items-center justify-between group cursor-pointer"
+                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-left transition-all flex items-center justify-between group cursor-pointer"
               >
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">Mr. R.K. Sharma</div>
-                  <div className="text-xs text-slate-500">GFM Div-A &bull; Batch-1 (34 Students) &bull; Senior Physics</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-900 text-sm">Mr. R.K. Sharma</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">Div-A &bull; Batch-1</span>
+                  </div>
+                  <div className="text-xs text-slate-500 mt-0.5">34 Mentees &bull; Senior Physics</div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-all" />
               </button>
 
               <button
                 type="button"
                 onClick={() => handleMentorQuickLogin('mentor-2', 'Mrs. Sunita Roy')}
-                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition-all flex items-center justify-between group cursor-pointer"
+                className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-left transition-all flex items-center justify-between group cursor-pointer"
               >
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">Mrs. Sunita Roy</div>
-                  <div className="text-xs text-slate-500">GFM Div-C &bull; Batch-3 (32 Students) &bull; Senior Accounts</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-900 text-sm">Mrs. Sunita Roy</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">Div-C &bull; Batch-3</span>
+                  </div>
+                  <div className="text-xs text-slate-500 mt-0.5">32 Mentees &bull; Senior Accounts</div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-all" />
               </button>
             </div>
           ) : (
             /* COORDINATOR LOGIN */
             <div className="space-y-4">
-              <span className="text-xs text-slate-500 block mb-2">
-                Access the central oversight console for Mentor Coordinators, HoDs, and Academic Administration:
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+                Administrative Oversight
               </span>
 
-              <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-3">
+              <div className="p-5 rounded-xl bg-slate-900 text-white space-y-3.5 border border-slate-800">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold border border-slate-700">
                     <Building2 className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm">Institutional Coordinator Portal</h4>
+                    <h4 className="font-bold text-sm text-white">Institutional Coordinator Portal</h4>
                     <p className="text-[11px] text-slate-400">Total Mentors &bull; Mentee Reports &bull; Allocation</p>
                   </div>
                 </div>
 
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Review submitted mentor reports, view student names across mentors, audit Red/Orange/Green mentor activity health flags, and allocate faculty to batch divisions.
+                  Review verified mentor logs, track mentee activity status across divisions, and manage academic batch allocations.
                 </p>
 
                 <button
@@ -280,7 +286,7 @@ export default function GfmLoginPage() {
                     }));
                     router.push('/gfm/coordinator');
                   }}
-                  className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2.5 rounded-lg bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Enter Coordinator Admin Center</span>
                   <ArrowRight className="w-4 h-4" />

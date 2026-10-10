@@ -8,7 +8,6 @@ import {
   MicOff, 
   Square, 
   Play, 
-  Sparkles, 
   CheckCircle2, 
   BookMarked, 
   ArrowLeft, 
@@ -349,7 +348,7 @@ export default function GfmOneOnOneSessionPage() {
 
         <div className="max-w-xl mx-auto text-center space-y-5 relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
+            <Mic className="w-3.5 h-3.5" />
             <span>30–45 Second Voice-to-Insight Engine</span>
           </div>
 
@@ -444,7 +443,7 @@ export default function GfmOneOnOneSessionPage() {
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                <Sparkles className="w-4 h-4" />
+                <FileText className="w-4 h-4" />
               </div>
               <div>
                 <h3 className="font-extrabold text-slate-900 text-base">

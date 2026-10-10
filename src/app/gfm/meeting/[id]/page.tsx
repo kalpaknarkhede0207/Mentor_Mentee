@@ -16,7 +16,6 @@ import {
   ArrowLeft, 
   Save, 
   ShieldCheck, 
-  Sparkles, 
   Filter, 
   Search, 
   Plus, 
